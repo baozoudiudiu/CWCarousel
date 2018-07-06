@@ -97,7 +97,8 @@
 #pragma mark - < getter >
 - (UICollectionView *)carouselView {
     if(!_carouselView) {
-        self.carouselView = [[UICollectionView alloc] initWithFrame:self.bounds collectionViewLayout:self.flowLayout];
+        self.carouselView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 30, self.frame.size.width, self.frame.size.height - 30 * 2) collectionViewLayout:self.flowLayout];
+        _carouselView.clipsToBounds = NO;
         _carouselView.delegate = self;
         _carouselView.dataSource = self;
         [self addSubview:_carouselView];

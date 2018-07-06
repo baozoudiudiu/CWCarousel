@@ -39,9 +39,9 @@
 }
 
 - (void)createButtons {
-    NSArray *titles = @[@"正常样式", @"横向滑动两边留白", @"横向滑动两边留白渐变效果"];
+    NSArray *titles = @[@"正常样式", @"横向滑动两边留白", @"横向滑动两边留白渐变效果", @"两边被遮挡效果"];
     CGFloat height = 40;
-    dispatch_apply(3, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(size_t index) {
+    dispatch_apply(4, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(size_t index) {
         UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.view addSubview:button];
@@ -89,6 +89,9 @@
         case 2:
             return CWCarouselStyle_H_2;
             break;
+        case 3:
+            return CWCarouselStyle_H_3;
+            break;
         default:
             return CWCarouselStyle_Unknow;
             break;
@@ -108,6 +111,8 @@
         imgView.tag = kViewTag;
         imgView.backgroundColor = [UIColor redColor];
         [cell.contentView addSubview:imgView];
+        cell.layer.masksToBounds = YES;
+        cell.layer.cornerRadius = 8;
     }
     NSString *name = [NSString stringWithFormat:@"%02ld.jpg", index + 1];
     UIImage *img = [UIImage imageNamed:name];

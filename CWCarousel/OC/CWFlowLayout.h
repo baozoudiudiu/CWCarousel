@@ -12,7 +12,8 @@ typedef NS_ENUM(NSUInteger, CWCarouselStyle) {
     CWCarouselStyle_Unknow = 0,
     CWCarouselStyle_Normal,
     CWCarouselStyle_H_1,
-    CWCarouselStyle_H_2
+    CWCarouselStyle_H_2,
+    CWCarouselStyle_H_3,
 };
 
 @interface CWFlowLayout : UICollectionViewFlowLayout
