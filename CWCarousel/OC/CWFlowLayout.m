@@ -75,6 +75,7 @@
         NSArray<UICollectionViewLayoutAttributes *> *arr = [[NSArray alloc] initWithArray:[super layoutAttributesForElementsInRect:rect] copyItems:YES];
         CGFloat centerX = self.collectionView.contentOffset.x + CGRectGetWidth(self.collectionView.frame) * 0.5;
         CGFloat width = CGRectGetWidth(self.collectionView.frame) * 0.75;
+        __block CGFloat minSpace = MAXFLOAT;
         [arr enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             CGFloat space = ABS(obj.center.x - centerX);
             if(space > 0) {
@@ -85,6 +86,11 @@
                     scale = -(0.3 / width) * space + 1.2;
                 }
                 obj.transform = CGAffineTransformMakeScale(scale, scale);
+            }
+            obj.zIndex = 0;
+            if (minSpace > space) {
+                minSpace = space;
+                obj.zIndex = 1;
             }
         }];
         return arr;
