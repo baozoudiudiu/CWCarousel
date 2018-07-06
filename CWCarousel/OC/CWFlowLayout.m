@@ -105,11 +105,11 @@
     __block CGFloat minSpace = MAXFLOAT;
     __block NSInteger index = 0;
     [tempArr enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        obj.zIndex = 0;
         if(ABS(minSpace) > ABS(obj.center.x - centerX)) {
             minSpace = obj.center.x - centerX;
             index = idx;
         }
-        obj.zIndex = 0;
     }];
     proposedContentOffset.x += minSpace;
     [tempArr objectAtIndex:index].zIndex = 1;
