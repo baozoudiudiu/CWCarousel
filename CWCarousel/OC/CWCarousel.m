@@ -15,6 +15,7 @@
 @property (nonatomic, assign) NSInteger        numbers;
 @property (nonatomic, assign) NSInteger        currentIndex;
 @property (nonatomic, assign) NSInteger        infactIndex;
+@property (nonatomic, assign) CGFloat           addHeight;
 @end
 
 @implementation CWCarousel
@@ -22,6 +23,15 @@
 
 
 - (instancetype)initWithFrame:(CGRect)frame delegate:(id<CWCarouselDelegate>)delegate datasource:(id<CWCarouselDatasource>)datasource flowLayout:(CWFlowLayout *)flowLayout {
+    CGFloat addHeight = 0;
+    if(flowLayout.style == CWCarouselStyle_H_3) {
+        /* 如果是CWCarouselStyle_H_3, 因为中间一张图片放大的原因,需要扩充一下frame的高度,所以会和实际的传入的frame
+         的高度有部分偏差
+         */
+        addHeight = (flowLayout.maxScale - 1) * CGRectGetHeight(frame);
+    }
+    frame.size.height += addHeight;
+    self.addHeight = addHeight;
     if(self = [super initWithFrame:frame]) {
         _flowLayout = flowLayout;
         self.delegate = delegate;
@@ -29,6 +39,11 @@
         [self configureView];
     }
     return self;
+}
+
+- (void)willMoveToSuperview:(UIView *)newSuperview {
+    newSuperview.clipsToBounds = NO;
+    [super willMoveToSuperview:newSuperview];
 }
 
 - (void)registerViewClass:(Class)viewClass identifier:(NSString *)identifier {
@@ -103,7 +118,7 @@
 #pragma mark - < getter >
 - (UICollectionView *)carouselView {
     if(!_carouselView) {
-        self.carouselView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 30, self.frame.size.width, self.frame.size.height - 30 * 2) collectionViewLayout:self.flowLayout];
+        self.carouselView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, self.addHeight * 0.5, self.frame.size.width, self.frame.size.height - self.addHeight) collectionViewLayout:self.flowLayout];
         _carouselView.clipsToBounds = NO;
         _carouselView.delegate = self;
         _carouselView.dataSource = self;

@@ -67,6 +67,7 @@
         self.carousel = nil;
     }
     
+    self.animationView.backgroundColor = [UIColor orangeColor];
     CWFlowLayout *flowLayout = [[CWFlowLayout alloc] initWithStyle:[self styleFromTag:tag]];
     CWCarousel *carousel = [[CWCarousel alloc] initWithFrame:self.animationView.bounds
                                                     delegate:self

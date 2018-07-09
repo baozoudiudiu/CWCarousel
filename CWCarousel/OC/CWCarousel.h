@@ -30,7 +30,7 @@
  样式风格
  */
 @property (nonatomic, assign, readonly) CWCarouselStyle   style;
-
+@property (nonatomic, assign, readonly) CGFloat           addHeight;
 /**
  实际的示轮播图内容的视图(其实就是基于collectionView实现的)
  */
