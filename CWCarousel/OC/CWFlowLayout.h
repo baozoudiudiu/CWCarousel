@@ -32,5 +32,7 @@ typedef NS_ENUM(NSUInteger, CWCarouselStyle) {
  */
 @property (nonatomic, assign) CGFloat itemSpace_V;
 
+@property (nonatomic, strong, readonly) NSIndexPath *adjustIndexPath;
+@property (nonatomic, strong, readonly) UICollectionViewLayoutAttributes *currentAttri;
 - (instancetype)initWithStyle:(CWCarouselStyle)style;
 @end

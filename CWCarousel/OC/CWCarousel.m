@@ -44,7 +44,14 @@
     [self.carouselView reloadData];
     [self.carouselView scrollToItemAtIndexPath:[self originIndexPath] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
 }
+#pragma mark - < Scroll Delegate >
 
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    CWFlowLayout *layout = (CWFlowLayout *)(self.carouselView.collectionViewLayout);
+    if(layout.adjustIndexPath != nil) {
+        [self.carouselView scrollToItemAtIndexPath:layout.adjustIndexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
+    }
+}
 #pragma mark - < Logic Helper >
 - (NSIndexPath *)originIndexPath {
     NSInteger centerIndex = [self infactNumbers] / [self numbers];

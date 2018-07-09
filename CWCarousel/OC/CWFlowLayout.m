@@ -75,7 +75,8 @@
         NSArray<UICollectionViewLayoutAttributes *> *arr = [[NSArray alloc] initWithArray:[super layoutAttributesForElementsInRect:rect] copyItems:YES];
         CGFloat centerX = self.collectionView.contentOffset.x + CGRectGetWidth(self.collectionView.frame) * 0.5;
         CGFloat width = CGRectGetWidth(self.collectionView.frame) * 0.75;
-        __block CGFloat minSpace = MAXFLOAT;
+        __block CGFloat maxScale = 0;
+        __block UICollectionViewLayoutAttributes *attri = nil;
         [arr enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             CGFloat space = ABS(obj.center.x - centerX);
             if(space > 0) {
@@ -86,13 +87,16 @@
                     scale = -(0.3 / width) * space + 1.2;
                 }
                 obj.transform = CGAffineTransformMakeScale(scale, scale);
+                if(maxScale < scale) {
+                    maxScale = scale;
+                    attri = obj;
+                }
             }
             obj.zIndex = 0;
-            if (minSpace > space) {
-                minSpace = space;
-                obj.zIndex = 1;
-            }
         }];
+        if (attri) {
+            attri.zIndex = 1;
+        }
         return arr;
     }else {
         return [super layoutAttributesForElementsInRect:rect];
@@ -101,25 +105,41 @@
 
 - (CGPoint)targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset withScrollingVelocity:(CGPoint)velocity {
     CGRect rect;
+    _adjustIndexPath = nil;
     rect.origin.x = proposedContentOffset.x;
     rect.origin.y = 0;
     rect.size.width = CGRectGetWidth(self.collectionView.frame);
     rect.size.height = CGRectGetHeight(self.collectionView.frame);
-    
+
     CGFloat centerX = proposedContentOffset.x + CGRectGetWidth(self.collectionView.frame) * 0.5;
     NSArray <UICollectionViewLayoutAttributes *>  *tempArr = [super layoutAttributesForElementsInRect:rect];
     __block CGFloat minSpace = MAXFLOAT;
-    __block NSInteger index = 0;
+    __block UICollectionViewLayoutAttributes *attributes = nil;
     [tempArr enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         obj.zIndex = 0;
         if(ABS(minSpace) > ABS(obj.center.x - centerX)) {
             minSpace = obj.center.x - centerX;
-            index = idx;
+            attributes = obj;
         }
     }];
-    proposedContentOffset.x += minSpace;
-    [tempArr objectAtIndex:index].zIndex = 1;
+    attributes.zIndex = 1;
+    _currentAttri = attributes;
+    if(velocity.x == 0) {
+        proposedContentOffset.x += minSpace;
+        _adjustIndexPath = nil;
+    }else if(attributes) {
+        if(ABS(minSpace) >= attributes.size.width * 0.15) {
+            NSInteger der = attributes.indexPath.row;
+            if(velocity.x > 0) {
+                der = (minSpace < 0 && velocity.x > 0) ? 1 : 0;
+            }else {
+                der = (minSpace > 0 && velocity.x < 0) ? -1 : 0;
+            }
+            _adjustIndexPath = [NSIndexPath indexPathForRow:attributes.indexPath.row + der inSection:attributes.indexPath.section];
+        }else {
+            _adjustIndexPath = attributes.indexPath;
+        }
+    }
     return proposedContentOffset;
 }
-
 @end
