@@ -122,6 +122,7 @@
         _carouselView.clipsToBounds = NO;
         _carouselView.delegate = self;
         _carouselView.dataSource = self;
+        _carouselView.pagingEnabled = YES;
         [self addSubview:_carouselView];
     }
     return _carouselView;

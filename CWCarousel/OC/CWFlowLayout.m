@@ -153,6 +153,7 @@
             _adjustIndexPath = attributes.indexPath;
         }
     }
+
     return proposedContentOffset;
 }
 #pragma mark - Property

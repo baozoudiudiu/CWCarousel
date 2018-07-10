@@ -11,7 +11,7 @@
 #import "CWCarousel.h"
 
 #define kViewTag 666
-#define kCount 4
+#define kCount 5
 
 @interface ViewController ()<CWCarouselDatasource, CWCarouselDelegate>
 
