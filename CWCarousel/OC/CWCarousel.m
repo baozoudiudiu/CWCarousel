@@ -15,7 +15,11 @@
 @property (nonatomic, assign) NSInteger        numbers;
 @property (nonatomic, assign) NSInteger        currentIndex;
 @property (nonatomic, assign) NSInteger        infactIndex;
-@property (nonatomic, assign) CGFloat           addHeight;
+@property (nonatomic, assign) CGFloat          addHeight;
+
+/// case
+//@property (nonatomic, strong) UICollectionViewLayoutAttributes *nextAttributes;
+@property (nonatomic, strong) NSIndexPath      *currentIndexPath;
 @end
 
 @implementation CWCarousel
@@ -58,22 +62,95 @@
 - (void)freshCarousel {
     [self.carouselView reloadData];
     [self.carouselView scrollToItemAtIndexPath:[self originIndexPath] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
+    self.carouselView.userInteractionEnabled = YES;
 }
 #pragma mark - < Scroll Delegate >
-- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
-    CWFlowLayout *layout = (CWFlowLayout *)(self.carouselView.collectionViewLayout);
-    if(layout.adjustIndexPath != nil) {
-        [self.carouselView scrollToItemAtIndexPath:layout.adjustIndexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
+/// 开始拖拽
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+    // 防止拖动加速度太大,一次跳过多张图片,这里设置一下
+    scrollView.pagingEnabled = YES;
+}
+
+/// 将要结束拖拽
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
+    if(velocity.x > 0) {
+        //左滑,下一张
+        self.currentIndexPath = [NSIndexPath indexPathForRow:self.currentIndexPath.row + 1 inSection:self.currentIndexPath.section];
+    }else if (velocity.x < 0) {
+        //右滑,上一张
+        self.currentIndexPath = [NSIndexPath indexPathForRow:self.currentIndexPath.row - 1 inSection:self.currentIndexPath.section];
+    }else if (velocity.x == 0) {
+        //还有一种情况,当滑动后手指按住不放,然后松开,此时的加速度其实是为0的
+        NSArray <NSIndexPath *> *indexPaths = [self.carouselView indexPathsForVisibleItems];
+        NSMutableArray <UICollectionViewLayoutAttributes *> *attriArr = [NSMutableArray arrayWithCapacity:indexPaths.count];
+        [indexPaths enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            UICollectionViewLayoutAttributes *attri = [self.carouselView layoutAttributesForItemAtIndexPath:obj];
+            [attriArr addObject:attri];
+        }];
+        CGFloat centerX = scrollView.contentOffset.x + CGRectGetWidth(self.carouselView.frame) * 0.5;
+        __block CGFloat minSpace = MAXFLOAT;
+        [attriArr enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            obj.zIndex = 0;
+            if(ABS(minSpace) > ABS(obj.center.x - centerX)) {
+                minSpace = obj.center.x - centerX;
+                self.currentIndexPath = obj.indexPath;
+            }
+        }];
     }
+}
+
+/// 开始减速
+- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
+    if(self.currentIndexPath != nil &&
+       self.currentIndexPath.row < [self infactNumbers] &&
+       self.currentIndexPath.row >= 0) {
+        // 中间一张轮播,居中显示
+        [self.carouselView scrollToItemAtIndexPath:self.currentIndexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
+    }
+}
+
+/// 减速完成
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    // 打开交互
+    scrollView.userInteractionEnabled = YES;
+}
+
+/// 滚动动画完成
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+    // 滚动完成,打开交互,关掉pagingEnabled
+    // 为什么要关掉pagingEnabled呢,因为切换控制器的时候会有系统级bug,不信你试试.
+    scrollView.userInteractionEnabled = YES;
+    scrollView.pagingEnabled = NO;
+    // 越界检查
+    if(self.currentIndexPath.row == [self infactNumbers] - 1) {
+        //最后一张
+        NSIndexPath *origin = [self originIndexPath];
+        NSInteger index = [self caculateIndex:self.currentIndexPath.row] - 1;
+        self.currentIndexPath = [NSIndexPath indexPathForRow:origin.row + index inSection:origin.section];
+        [self.carouselView scrollToItemAtIndexPath:self.currentIndexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
+    }else if(self.currentIndexPath.row == 0) {
+        //第一张
+        NSIndexPath *origin = [self originIndexPath];
+        NSInteger index = [self caculateIndex:self.currentIndexPath.row];
+        self.currentIndexPath = [NSIndexPath indexPathForRow:origin.row + index inSection:origin.section];
+        [self.carouselView scrollToItemAtIndexPath:self.currentIndexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
+    }
+}
+
+// 滚动中
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    // 滚动过程中关闭交互
+    scrollView.userInteractionEnabled = NO;
 }
 #pragma mark - < Logic Helper >
 - (NSIndexPath *)originIndexPath {
     NSInteger centerIndex = [self infactNumbers] / [self numbers];
     if(centerIndex <= 1) {
-        return [NSIndexPath indexPathForRow:self.numbers inSection:0];
+        self.currentIndexPath = [NSIndexPath indexPathForRow:self.numbers inSection:0];
     }else {
-        return [NSIndexPath indexPathForRow:centerIndex / 2 * [self numbers] inSection:0];
+        self.currentIndexPath = [NSIndexPath indexPathForRow:centerIndex / 2 * [self numbers] inSection:0];
     }
+    return self.currentIndexPath;
 }
 
 /**
@@ -114,7 +191,11 @@
         [self.delegate CWCarousel:self didSelectedAtIndex:[self caculateIndex:indexPath.row]];
     }
 }
-
+#pragma mark - <setter>
+- (void)setBackgroundColor:(UIColor *)backgroundColor {
+    self.carouselView.backgroundColor = backgroundColor;
+    [super setBackgroundColor:backgroundColor];
+}
 #pragma mark - < getter >
 - (UICollectionView *)carouselView {
     if(!_carouselView) {
@@ -122,7 +203,7 @@
         _carouselView.clipsToBounds = NO;
         _carouselView.delegate = self;
         _carouselView.dataSource = self;
-        _carouselView.pagingEnabled = NO;
+//        _carouselView.pagingEnabled = YES;
         [self addSubview:_carouselView];
     }
     return _carouselView;
@@ -148,6 +229,8 @@
  @return 轮播图实际加载视图个数
  */
 - (NSInteger)infactNumbers {
-    return 500;
+    return 200;
 }
 @end
+
+
