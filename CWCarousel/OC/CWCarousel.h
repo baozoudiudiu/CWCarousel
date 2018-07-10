@@ -37,8 +37,16 @@
 /**
  实际的示轮播图内容的视图(其实就是基于collectionView实现的)
  */
-@property (nonatomic, strong, readonly) UICollectionView    * _Nonnull carouselView;
+@property (nonatomic, strong, readonly) UICollectionView  * _Nonnull carouselView;
 
+/**
+ 是否自动轮播, 默认为NO
+ */
+@property (nonatomic, assign) BOOL                        isAuto;
+/**
+ 自动轮播事件间隔, 默认 3s
+ */
+@property (nonatomic, assign) NSTimeInterval              autoTimInterval;
 #pragma mark - < 相关方法 >
 /**
  创建实例构造方法
@@ -75,4 +83,19 @@
  刷新轮播图
  */
 - (void)freshCarousel;
+
+/**
+ 暂停轮播图后,可以调用改方法继续播放
+ */
+- (void)resumePlay;
+
+/**
+ 轮播图暂停自动播放
+ */
+- (void)pause;
+
+/**
+ 如果开启自动轮播,销毁前需要调用该方法,释放定时器
+ */
+- (void)releaseTimer;
 @end

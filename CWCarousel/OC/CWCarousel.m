@@ -16,6 +16,7 @@
 @property (nonatomic, assign) NSInteger        currentIndex;
 @property (nonatomic, assign) NSInteger        infactIndex;
 @property (nonatomic, assign) CGFloat          addHeight;
+@property (nonatomic, assign) BOOL             isPause;
 
 /// case
 //@property (nonatomic, strong) UICollectionViewLayoutAttributes *nextAttributes;
@@ -40,6 +41,8 @@
         _flowLayout = flowLayout;
         self.delegate = delegate;
         self.datasource = datasource;
+        self.isAuto = NO;
+        self.autoTimInterval = 3;
         [self configureView];
     }
     return self;
@@ -63,12 +66,18 @@
     [self.carouselView reloadData];
     [self.carouselView scrollToItemAtIndexPath:[self originIndexPath] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
     self.carouselView.userInteractionEnabled = YES;
+    if (self.isAuto) {
+        [self play];
+    }
 }
 #pragma mark - < Scroll Delegate >
 /// 开始拖拽
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     // 防止拖动加速度太大,一次跳过多张图片,这里设置一下
     scrollView.pagingEnabled = YES;
+    if (self.isAuto) {
+        [self stop];
+    }
 }
 
 /// 将要结束拖拽
@@ -113,6 +122,10 @@
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     // 打开交互
     scrollView.userInteractionEnabled = YES;
+    scrollView.pagingEnabled = NO;
+    if(self.isAuto) {
+        [self play];
+    }
 }
 
 /// 滚动动画完成
@@ -121,20 +134,10 @@
     // 为什么要关掉pagingEnabled呢,因为切换控制器的时候会有系统级bug,不信你试试.
     scrollView.userInteractionEnabled = YES;
     scrollView.pagingEnabled = NO;
-    // 越界检查
-    if(self.currentIndexPath.row == [self infactNumbers] - 1) {
-        //最后一张
-        NSIndexPath *origin = [self originIndexPath];
-        NSInteger index = [self caculateIndex:self.currentIndexPath.row] - 1;
-        self.currentIndexPath = [NSIndexPath indexPathForRow:origin.row + index inSection:origin.section];
-        [self.carouselView scrollToItemAtIndexPath:self.currentIndexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
-    }else if(self.currentIndexPath.row == 0) {
-        //第一张
-        NSIndexPath *origin = [self originIndexPath];
-        NSInteger index = [self caculateIndex:self.currentIndexPath.row];
-        self.currentIndexPath = [NSIndexPath indexPathForRow:origin.row + index inSection:origin.section];
-        [self.carouselView scrollToItemAtIndexPath:self.currentIndexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
+    if(self.isAuto) {
+        [self play];
     }
+    [self checkOutofBounds];
 }
 
 // 滚动中
@@ -153,6 +156,25 @@
     return self.currentIndexPath;
 }
 
+- (void)checkOutofBounds {
+    // 越界检查
+    if(self.currentIndexPath.row == [self infactNumbers] - 1) {
+        //最后一张
+        NSIndexPath *origin = [self originIndexPath];
+        NSInteger index = [self caculateIndex:self.currentIndexPath.row] - 1;
+        self.currentIndexPath = [NSIndexPath indexPathForRow:origin.row + index inSection:origin.section];
+        [self.carouselView scrollToItemAtIndexPath:self.currentIndexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
+        self.carouselView.userInteractionEnabled = YES;
+    }else if(self.currentIndexPath.row == 0) {
+        //第一张
+        NSIndexPath *origin = [self originIndexPath];
+        NSInteger index = [self caculateIndex:self.currentIndexPath.row];
+        self.currentIndexPath = [NSIndexPath indexPathForRow:origin.row + index inSection:origin.section];
+        [self.carouselView scrollToItemAtIndexPath:self.currentIndexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
+        self.carouselView.userInteractionEnabled = YES;
+    }
+}
+
 /**
  实际下标转换成业务需求下标
 
@@ -162,6 +184,42 @@
 - (NSInteger)caculateIndex:(NSInteger)factIndex {
     NSInteger row = factIndex % [self numbers];
     return row;
+}
+
+- (void)play {
+    [self stop];
+    if(self.isPause) {
+        return;
+    }
+    [self performSelector:@selector(nextCell) withObject:nil afterDelay:self.autoTimInterval];
+}
+
+- (void)nextCell {
+    if(self.currentIndexPath.row < [self infactNumbers] - 1) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.currentIndexPath.row + 1 inSection:self.currentIndexPath.section];
+        [self.carouselView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
+        self.currentIndexPath = indexPath;
+    }
+    [self performSelector:@selector(nextCell) withObject:nil afterDelay:self.autoTimInterval];
+}
+
+- (void)stop {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(nextCell) object:nil];
+    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+}
+
+- (void)resumePlay {
+    self.isPause = NO;
+    [self play];
+}
+
+- (void)pause {
+    self.isPause = YES;
+    [self stop];
+}
+
+- (void)releaseTimer {
+    [self stop];
 }
 
 #pragma mark - < Configure View>
@@ -203,7 +261,6 @@
         _carouselView.clipsToBounds = NO;
         _carouselView.delegate = self;
         _carouselView.dataSource = self;
-//        _carouselView.pagingEnabled = YES;
         [self addSubview:_carouselView];
     }
     return _carouselView;
@@ -229,7 +286,7 @@
  @return 轮播图实际加载视图个数
  */
 - (NSInteger)infactNumbers {
-    return 200;
+    return 300;
 }
 @end
 

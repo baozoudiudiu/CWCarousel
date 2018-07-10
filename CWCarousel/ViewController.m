@@ -28,6 +28,19 @@
 //    [self configureUI];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    if(self.carousel.isAuto) {
+        [self.carousel resumePlay];
+    }
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    if(self.carousel.isAuto) {
+        [self.carousel pause];
+    }
+}
 #pragma mark - < 事件响应 >
 - (void)buttonClick:(UIButton *)sender {
     static NSInteger tag = -1;
@@ -73,7 +86,8 @@
                                                     delegate:self
                                                   datasource:self
                                                   flowLayout:flowLayout];
-    carousel.backgroundColor = [UIColor orangeColor];
+    carousel.isAuto = YES;
+    carousel.backgroundColor = [UIColor whiteColor];
     [self.animationView addSubview:carousel];
     [carousel registerViewClass:[UICollectionViewCell class] identifier:@"cellId"];
     [carousel freshCarousel];
