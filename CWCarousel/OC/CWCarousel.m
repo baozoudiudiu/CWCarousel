@@ -16,13 +16,17 @@
 @property (nonatomic, assign) NSInteger        currentIndex;
 @property (nonatomic, assign) NSInteger        infactIndex;
 @property (nonatomic, assign) CGFloat          addHeight;
+/**
+ 自动播放是否暂停
+ */
 @property (nonatomic, assign) BOOL             isPause;
 
-/// case
-//@property (nonatomic, strong) UICollectionViewLayoutAttributes *nextAttributes;
+/**
+ 当前展示在中间的cell下标
+ */
 @property (nonatomic, strong) NSIndexPath      *currentIndexPath;
-@end
 
+@end
 @implementation CWCarousel
 @synthesize carouselView = _carouselView;
 
@@ -50,6 +54,9 @@
 
 - (void)willMoveToSuperview:(UIView *)newSuperview {
     newSuperview.clipsToBounds = NO;
+    if(self.customPageControl == nil) {
+        [self addSubview:self.pageControl];
+    }
     [super willMoveToSuperview:newSuperview];
 }
 
@@ -254,6 +261,10 @@
     self.carouselView.backgroundColor = backgroundColor;
     [super setBackgroundColor:backgroundColor];
 }
+- (void)setCurrentIndexPath:(NSIndexPath *)currentIndexPath {
+    _currentIndexPath = currentIndexPath;
+    self.pageControl.currentPage = [self caculateIndex:currentIndexPath.row];
+}
 #pragma mark - < getter >
 - (UICollectionView *)carouselView {
     if(!_carouselView) {
@@ -275,7 +286,8 @@
 - (NSInteger)numbers {
     if(self.datasource &&
        [self.datasource respondsToSelector:@selector(numbersForCarousel)]) {
-        return [self.datasource numbersForCarousel];
+        self.pageControl.numberOfPages = [self.datasource numbersForCarousel];
+        return self.pageControl.numberOfPages;
     }
     return 0;
 }
@@ -287,6 +299,18 @@
  */
 - (NSInteger)infactNumbers {
     return 300;
+}
+
+- (UIPageControl *)pageControl {
+    if(!_pageControl) {
+        self.pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0, 0, 300, 30)];
+        CGPoint center = self.center;
+        center.y = CGRectGetHeight(self.frame) - 30 * 0.5;
+        _pageControl.pageIndicatorTintColor = [UIColor blackColor];
+        _pageControl.currentPageIndicatorTintColor = [UIColor whiteColor];
+        _pageControl.center = center;
+    }
+    return _pageControl;
 }
 @end
 

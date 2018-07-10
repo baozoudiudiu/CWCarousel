@@ -7,7 +7,6 @@
 //
 
 #import "ViewController.h"
-
 #import "CWCarousel.h"
 
 #define kViewTag 666

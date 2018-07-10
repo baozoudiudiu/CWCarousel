@@ -47,6 +47,15 @@
  自动轮播事件间隔, 默认 3s
  */
 @property (nonatomic, assign) NSTimeInterval              autoTimInterval;
+
+/**
+ 默认的pageControl
+ */
+@property (nonatomic, strong) UIPageControl               *pageControl;
+/**
+ 自定义的pageControl(暂时不支持)
+ */
+@property (nonatomic, strong) UIView<CWCarouselPageControlProtocol> *customPageControl;
 #pragma mark - < 相关方法 >
 /**
  创建实例构造方法
