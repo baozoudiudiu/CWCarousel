@@ -26,6 +26,32 @@
     [self createButtons];
 //    [self configureUI];
 }
+- (void)configureUI:(NSInteger)tag {
+    CATransition *tr = [CATransition animation];
+    tr.type = @"cube";
+    tr.subtype = kCATransitionFromRight;
+    tr.duration = 0.25;
+    [self.animationView.layer addAnimation:tr forKey:nil];
+    
+    self.view.backgroundColor = [UIColor whiteColor];
+    if(self.carousel) {
+        [self.carousel removeFromSuperview];
+        self.carousel = nil;
+    }
+    
+    self.animationView.backgroundColor = [UIColor whiteColor];
+    CWFlowLayout *flowLayout = [[CWFlowLayout alloc] initWithStyle:[self styleFromTag:tag]];
+    CWCarousel *carousel = [[CWCarousel alloc] initWithFrame:self.animationView.bounds
+                                                    delegate:self
+                                                  datasource:self
+                                                  flowLayout:flowLayout];
+    carousel.isAuto = YES;
+    carousel.backgroundColor = [UIColor whiteColor];
+    [self.animationView addSubview:carousel];
+    [carousel registerViewClass:[UICollectionViewCell class] identifier:@"cellId"];
+    [carousel freshCarousel];
+    self.carousel = carousel;
+}
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
@@ -64,33 +90,6 @@
         });
     });
     [self.view addSubview:self.animationView];
-}
-
-- (void)configureUI:(NSInteger)tag {
-    CATransition *tr = [CATransition animation];
-    tr.type = @"cube";
-    tr.subtype = kCATransitionFromRight;
-    tr.duration = 0.25;
-    [self.animationView.layer addAnimation:tr forKey:nil];
-    
-    self.view.backgroundColor = [UIColor whiteColor];
-    if(self.carousel) {
-        [self.carousel removeFromSuperview];
-        self.carousel = nil;
-    }
-    
-    self.animationView.backgroundColor = [UIColor whiteColor];
-    CWFlowLayout *flowLayout = [[CWFlowLayout alloc] initWithStyle:[self styleFromTag:tag]];
-    CWCarousel *carousel = [[CWCarousel alloc] initWithFrame:self.animationView.bounds
-                                                    delegate:self
-                                                  datasource:self
-                                                  flowLayout:flowLayout];
-    carousel.isAuto = YES;
-    carousel.backgroundColor = [UIColor whiteColor];
-    [self.animationView addSubview:carousel];
-    [carousel registerViewClass:[UICollectionViewCell class] identifier:@"cellId"];
-    [carousel freshCarousel];
-    self.carousel = carousel;
 }
 
 - (CWCarouselStyle)styleFromTag:(NSInteger)tag {

@@ -54,7 +54,7 @@
 
 - (void)willMoveToSuperview:(UIView *)newSuperview {
     newSuperview.clipsToBounds = NO;
-    if(self.customPageControl == nil) {
+    if(self.customPageControl == nil && self.pageControl.superview == nil) {
         [self addSubview:self.pageControl];
     }
     [super willMoveToSuperview:newSuperview];

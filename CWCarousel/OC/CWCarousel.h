@@ -38,7 +38,6 @@
  实际的示轮播图内容的视图(其实就是基于collectionView实现的)
  */
 @property (nonatomic, strong, readonly) UICollectionView  * _Nonnull carouselView;
-
 /**
  是否自动轮播, 默认为NO
  */
@@ -47,15 +46,18 @@
  自动轮播事件间隔, 默认 3s
  */
 @property (nonatomic, assign) NSTimeInterval              autoTimInterval;
-
 /**
  默认的pageControl
+ 1. 默认在水平居中正下方
+ 2. 位置可以自己根据frame自行调整
+ 3. 如果不想将其添加在carousel上,请自行通过调用目标父视图的addSubview方法添加到其他父视图上
  */
 @property (nonatomic, strong) UIPageControl               *pageControl;
 /**
  自定义的pageControl(暂时不支持)
  */
 @property (nonatomic, strong) UIView<CWCarouselPageControlProtocol> *customPageControl;
+
 #pragma mark - < 相关方法 >
 /**
  创建实例构造方法
