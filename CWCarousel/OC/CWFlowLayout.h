@@ -53,5 +53,12 @@ typedef NS_ENUM(NSUInteger, CWCarouselStyle) {
  */
 @property (nonatomic, assign) CGFloat itemSpace_V;
 
+
+/**
+ 构造方法
+
+ @param style 轮播图风格
+ @return 实例对象
+ */
 - (instancetype)initWithStyle:(CWCarouselStyle)style;
 @end

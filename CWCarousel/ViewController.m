@@ -116,6 +116,7 @@
     return kCount;
 }
 
+#pragma mark - Delegate
 - (UICollectionViewCell *)viewForCarousel:(CWCarousel *)carousel indexPath:(NSIndexPath *)indexPath index:(NSInteger)index{
     UICollectionViewCell *cell = [carousel.carouselView dequeueReusableCellWithReuseIdentifier:@"cellId" forIndexPath:indexPath];
     cell.contentView.backgroundColor = [UIColor cyanColor];
