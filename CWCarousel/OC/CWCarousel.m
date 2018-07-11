@@ -128,7 +128,6 @@
 /// 减速完成
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     // 打开交互
-    scrollView.userInteractionEnabled = YES;
     scrollView.pagingEnabled = NO;
     if(self.isAuto) {
         [self play];
@@ -150,7 +149,7 @@
 // 滚动中
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     // 滚动过程中关闭交互
-    scrollView.userInteractionEnabled = NO;
+//    scrollView.userInteractionEnabled = NO;
 }
 #pragma mark - < Logic Helper >
 - (NSIndexPath *)originIndexPath {
@@ -180,6 +179,29 @@
         [self.carouselView scrollToItemAtIndexPath:self.currentIndexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
         self.carouselView.userInteractionEnabled = YES;
     }
+}
+
+- (void)pageControlClick:(UIPageControl *)sender {
+    if (![sender isKindOfClass:[UIPageControl class]]) {
+        return;
+    }
+    NSInteger page = sender.currentPage;
+    NSInteger prePage = [self caculateIndex:self.currentIndexPath.row];
+    if(page == prePage) {
+        return;
+    }
+    NSIndexPath *indexPath = nil;
+    if(prePage - page == [self numbers] - 1) {
+        //最后一张跳到第一张
+        indexPath = [NSIndexPath indexPathForRow:self.currentIndexPath.row + 1 inSection:0];
+    }else if(page - prePage == [self numbers] - 1) {
+        //第一张跳到最后一张
+        indexPath = [NSIndexPath indexPathForRow:self.currentIndexPath.row - 1 inSection:0];
+    }else {
+        indexPath = [NSIndexPath indexPathForRow:self.currentIndexPath.row + page - prePage inSection:0];
+    }
+    [self.carouselView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
+    self.currentIndexPath = indexPath;
 }
 
 /**
@@ -308,6 +330,8 @@
         center.y = CGRectGetHeight(self.frame) - 30 * 0.5;
         _pageControl.pageIndicatorTintColor = [UIColor blackColor];
         _pageControl.currentPageIndicatorTintColor = [UIColor whiteColor];
+        _pageControl.userInteractionEnabled = NO;
+        [_pageControl addTarget:self action:@selector(pageControlClick:) forControlEvents:UIControlEventTouchUpInside];
         _pageControl.center = center;
     }
     return _pageControl;
