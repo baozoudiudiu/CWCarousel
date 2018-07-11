@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		282B0CE620F5993800E641F9 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 282B0CE520F5993800E641F9 /* README.md */; };
 		28D8861920F44EAE00BDED3D /* 05.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 28D8861420F44EAD00BDED3D /* 05.jpg */; };
 		28D8861A20F44EAE00BDED3D /* 03.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 28D8861520F44EAD00BDED3D /* 03.jpg */; };
 		28D8861B20F44EAE00BDED3D /* 04.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 28D8861620F44EAE00BDED3D /* 04.jpg */; };
@@ -24,6 +25,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		282B0CE520F5993800E641F9 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		28D8861420F44EAD00BDED3D /* 05.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 05.jpg; sourceTree = "<group>"; };
 		28D8861520F44EAD00BDED3D /* 03.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 03.jpg; sourceTree = "<group>"; };
 		28D8861620F44EAE00BDED3D /* 04.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 04.jpg; sourceTree = "<group>"; };
@@ -120,6 +122,7 @@
 		66704EA7209B427300286A9B /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				282B0CE520F5993800E641F9 /* README.md */,
 				28D8861820F44EAE00BDED3D /* 01.jpg */,
 				28D8861720F44EAE00BDED3D /* 02.jpg */,
 				28D8861520F44EAD00BDED3D /* 03.jpg */,
@@ -194,6 +197,7 @@
 				28D8861C20F44EAE00BDED3D /* 02.jpg in Resources */,
 				28D8861920F44EAE00BDED3D /* 05.jpg in Resources */,
 				666851A82073BBF900F91985 /* Main.storyboard in Resources */,
+				282B0CE620F5993800E641F9 /* README.md in Resources */,
 				28D8861D20F44EAE00BDED3D /* 01.jpg in Resources */,
 				28D8861B20F44EAE00BDED3D /* 04.jpg in Resources */,
 			);
