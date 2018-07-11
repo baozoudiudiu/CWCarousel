@@ -2,6 +2,7 @@
 
 ####基于collectionView实现的通用无限轮播图封装.
 ![example.gif](https://github.com/baozoudiudiu/CWCarousel/blob/master/CWCarousel/Sources/example.gif)
+![example.gif](https://upload-images.jianshu.io/upload_images/3096223-64b23965562677f7.gif?imageMogr2/auto-orient/strip)
 
 * 目前支持4种样式
 ```
@@ -16,17 +17,21 @@ CWCarouselStyle_H_3,            ///<自定义样式三, 中间一张居中,前�
 > CWCarouselStyle_Normal
 
 ![normal.gif](https://github.com/baozoudiudiu/CWCarousel/blob/master/CWCarousel/Sources/normal.gif)
+![normal.gif](https://upload-images.jianshu.io/upload_images/3096223-7a745a375cf86b75.gif?imageMogr2/auto-orient/strip)
 
 > CWCarouselStyle_H_1
 
 ![H_1.gif](https://github.com/baozoudiudiu/CWCarousel/blob/master/CWCarousel/Sources/H_1.gif)
+![H_1.gif](https://upload-images.jianshu.io/upload_images/3096223-04925d699694000a.gif?imageMogr2/auto-orient/strip)
 > CWCarouselStyle_H_2
 
 ![H_2.gif](https://github.com/baozoudiudiu/CWCarousel/blob/master/CWCarousel/Sources/H_2.gif)
+![H_2.gif](https://upload-images.jianshu.io/upload_images/3096223-158f78ab0329288e.gif?imageMogr2/auto-orient/strip)
 
 > CWCarouselStyle_H_3
 
 ![H_3.gif](https://github.com/baozoudiudiu/CWCarousel/blob/master/CWCarousel/Sources/H_3.gif)
+![H_3.gif](https://upload-images.jianshu.io/upload_images/3096223-39307907361b1e4d.gif?imageMogr2/auto-orient/strip)
 
 * 控件实例对象创建
 1. 创建flowLayout对象,设置轮播图风格
