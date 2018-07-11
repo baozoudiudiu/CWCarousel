@@ -97,6 +97,4 @@ return kCount;
 ```
 * 具体UI样式修改都有具体的属性,详情请查看对应类的.h文件即可. 
 
-[github地址](https://github.com/baozoudiudiu/CWCarousel.git)
-
 * 如有问题和bug,欢迎指正.
