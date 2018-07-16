@@ -17,7 +17,8 @@
 
 @property (nonatomic, strong) CWCarousel *carousel;
 @property (nonatomic, strong) UIView *animationView;
-
+@property (nonatomic, assign) BOOL openCustomPageControl;
+@property (nonatomic, weak) IBOutlet UISwitch *cusSwitch;
 @end
 
 @implementation ViewController
@@ -25,6 +26,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self createButtons];
+    [self.cusSwitch addTarget:self action:@selector(switchChanged:) forControlEvents:UIControlEventValueChanged];
 //    [self configureUI];
 }
 - (void)configureUI:(NSInteger)tag {
@@ -50,11 +52,13 @@
     carousel.backgroundColor = [UIColor whiteColor];
     
     /* 自定pageControl */
-//    CWPageControl *control = [[CWPageControl alloc] initWithFrame:CGRectMake(0, 0, 300, 20)];
-//    control.center = CGPointMake(CGRectGetWidth(carousel.frame) * 0.5, CGRectGetHeight(carousel.frame) - 10);
-//    control.pageNumbers = 5;
-//    control.currentPage = 0;
-//    carousel.customPageControl = control;
+    if(self.openCustomPageControl) {
+        CWPageControl *control = [[CWPageControl alloc] initWithFrame:CGRectMake(0, 0, 300, 20)];
+        control.center = CGPointMake(CGRectGetWidth(carousel.frame) * 0.5, CGRectGetHeight(carousel.frame) - 10);
+        control.pageNumbers = 5;
+        control.currentPage = 0;
+        carousel.customPageControl = control;
+    }
     
     [self.animationView addSubview:carousel];
     [carousel registerViewClass:[UICollectionViewCell class] identifier:@"cellId"];
@@ -84,7 +88,9 @@
     tag = sender.tag;
     [self configureUI:tag];
 }
-
+- (void)switchChanged:(UISwitch *)switchSender {
+    self.openCustomPageControl = switchSender.on;
+}
 - (void)createButtons {
     NSArray *titles = @[@"正常样式", @"横向滑动两边留白", @"横向滑动两边留白渐变效果", @"两边被遮挡效果"];
     CGFloat height = 40;

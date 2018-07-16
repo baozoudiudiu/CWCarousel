@@ -20,13 +20,34 @@
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="HHY-JC-xmC">
+                                <rect key="frame" x="306" y="577" width="51" height="31"/>
+                            </switch>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="开启自定义pageControl" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5ZE-Tg-gZw">
+                                <rect key="frame" x="0.0" y="583.5" width="286" height="18"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="flq-RF-9fC" firstAttribute="top" secondItem="HHY-JC-xmC" secondAttribute="bottom" constant="10" id="J7c-xA-AuS"/>
+                            <constraint firstAttribute="trailing" secondItem="HHY-JC-xmC" secondAttribute="trailing" constant="20" id="aVT-uI-pEK"/>
+                            <constraint firstItem="5ZE-Tg-gZw" firstAttribute="centerY" secondItem="HHY-JC-xmC" secondAttribute="centerY" id="dHL-yh-pIM"/>
+                            <constraint firstItem="HHY-JC-xmC" firstAttribute="leading" secondItem="5ZE-Tg-gZw" secondAttribute="trailing" constant="20" id="iUH-X8-vsg"/>
+                            <constraint firstItem="5ZE-Tg-gZw" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="p7F-0t-bw8"/>
+                        </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="OC" id="RqU-IP-9pf"/>
+                    <connections>
+                        <outlet property="cusSwitch" destination="HHY-JC-xmC" id="rpq-iE-0Ig"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-700" y="832"/>
+            <point key="canvasLocation" x="-700" y="831.63418290854577"/>
         </scene>
         <!--swift-->
         <scene sceneID="vf1-vm-TEw">
