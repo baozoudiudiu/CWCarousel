@@ -40,7 +40,18 @@
 
 
 @protocol CWCarouselPageControlProtocol<NSObject>
+@required
+/**
+ 总页数
+ */
+@property (nonatomic, assign) NSInteger         pageNumbers;
+/**
+ 当前页
+ */
+@property (nonatomic, assign) NSInteger         currentPage;
 
+- (void)setCurrentPage:(NSInteger)currentPage;
+- (void)setPageNumbers:(NSInteger)pageNumbers;
 @end
 #endif /* CWCarouselProtocol_h */
 

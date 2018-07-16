@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		282B0CE620F5993800E641F9 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 282B0CE520F5993800E641F9 /* README.md */; };
+		2882BCDF20FC7B97006E8063 /* CWPageControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 2882BCDE20FC7B97006E8063 /* CWPageControl.m */; };
 		28D8861920F44EAE00BDED3D /* 05.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 28D8861420F44EAD00BDED3D /* 05.jpg */; };
 		28D8861A20F44EAE00BDED3D /* 03.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 28D8861520F44EAD00BDED3D /* 03.jpg */; };
 		28D8861B20F44EAE00BDED3D /* 04.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 28D8861620F44EAE00BDED3D /* 04.jpg */; };
@@ -26,6 +27,8 @@
 
 /* Begin PBXFileReference section */
 		282B0CE520F5993800E641F9 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
+		2882BCDD20FC7B97006E8063 /* CWPageControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CWPageControl.h; sourceTree = "<group>"; };
+		2882BCDE20FC7B97006E8063 /* CWPageControl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CWPageControl.m; sourceTree = "<group>"; };
 		28D8861420F44EAD00BDED3D /* 05.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 05.jpg; sourceTree = "<group>"; };
 		28D8861520F44EAD00BDED3D /* 03.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 03.jpg; sourceTree = "<group>"; };
 		28D8861620F44EAE00BDED3D /* 04.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 04.jpg; sourceTree = "<group>"; };
@@ -62,6 +65,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2882BCDC20FC7B74006E8063 /* code */ = {
+			isa = PBXGroup;
+			children = (
+				2882BCDD20FC7B97006E8063 /* CWPageControl.h */,
+				2882BCDE20FC7B97006E8063 /* CWPageControl.m */,
+			);
+			path = code;
+			sourceTree = "<group>";
+		};
 		666851942073BBF800F91985 = {
 			isa = PBXGroup;
 			children = (
@@ -81,6 +93,7 @@
 		6668519F2073BBF800F91985 /* CWCarousel */ = {
 			isa = PBXGroup;
 			children = (
+				2882BCDC20FC7B74006E8063 /* code */,
 				666851A02073BBF900F91985 /* AppDelegate.h */,
 				666851A12073BBF900F91985 /* AppDelegate.m */,
 				666851A32073BBF900F91985 /* ViewController.h */,
@@ -214,6 +227,7 @@
 				666851C22073C1AC00F91985 /* CWFlowLayout.m in Sources */,
 				666851B02073BBF900F91985 /* main.m in Sources */,
 				666851BA2073BC8B00F91985 /* SViewController.swift in Sources */,
+				2882BCDF20FC7B97006E8063 /* CWPageControl.m in Sources */,
 				666851A22073BBF900F91985 /* AppDelegate.m in Sources */,
 				666851BD2073BF5600F91985 /* CWCarousel.m in Sources */,
 			);

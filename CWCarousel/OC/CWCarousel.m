@@ -56,6 +56,8 @@
     newSuperview.clipsToBounds = NO;
     if(self.customPageControl == nil && self.pageControl.superview == nil) {
         [self addSubview:self.pageControl];
+    }else if(self.customPageControl) {
+        [self addSubview:self.customPageControl];
     }
     [super willMoveToSuperview:newSuperview];
 }
@@ -285,7 +287,10 @@
 }
 - (void)setCurrentIndexPath:(NSIndexPath *)currentIndexPath {
     _currentIndexPath = currentIndexPath;
-    self.pageControl.currentPage = [self caculateIndex:currentIndexPath.row];
+    if(self.customPageControl == nil)
+        self.pageControl.currentPage = [self caculateIndex:currentIndexPath.row];
+    else
+        self.customPageControl.currentPage = [self caculateIndex:currentIndexPath.row];
 }
 #pragma mark - < getter >
 - (UICollectionView *)carouselView {

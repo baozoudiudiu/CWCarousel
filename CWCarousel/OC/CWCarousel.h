@@ -54,7 +54,7 @@
  */
 @property (nonatomic, strong) UIPageControl               *pageControl;
 /**
- 自定义的pageControl(暂时不支持)
+ 自定义的pageControl
  */
 @property (nonatomic, strong) UIView<CWCarouselPageControlProtocol> *customPageControl;
 

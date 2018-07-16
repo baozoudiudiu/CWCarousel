@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "CWCarousel.h"
+#import "CWPageControl.h"
 
 #define kViewTag 666
 #define kCount 5
@@ -47,6 +48,14 @@
                                                   flowLayout:flowLayout];
     carousel.isAuto = YES;
     carousel.backgroundColor = [UIColor whiteColor];
+    
+    /* 自定pageControl */
+//    CWPageControl *control = [[CWPageControl alloc] initWithFrame:CGRectMake(0, 0, 300, 20)];
+//    control.center = CGPointMake(CGRectGetWidth(carousel.frame) * 0.5, CGRectGetHeight(carousel.frame) - 10);
+//    control.pageNumbers = 5;
+//    control.currentPage = 0;
+//    carousel.customPageControl = control;
+    
     [self.animationView addSubview:carousel];
     [carousel registerViewClass:[UICollectionViewCell class] identifier:@"cellId"];
     [carousel freshCarousel];
