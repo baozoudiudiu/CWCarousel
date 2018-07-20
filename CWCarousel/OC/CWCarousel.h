@@ -43,7 +43,7 @@
  */
 @property (nonatomic, assign) BOOL                        isAuto;
 /**
- 自动轮播事件间隔, 默认 3s
+ 自动轮播时间间隔, 默认 3s
  */
 @property (nonatomic, assign) NSTimeInterval              autoTimInterval;
 /**

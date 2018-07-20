@@ -22,6 +22,9 @@ class CWSwiftFlowLayout: UICollectionViewFlowLayout {
         self.style = style
         super.init()
     }
+    deinit {
+        NSLog("%s", #function);
+    }
     required init?(coder aDecoder: NSCoder) {
         self.style = .unknown
         super.init(coder: aDecoder)

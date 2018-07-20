@@ -25,13 +25,17 @@ class SViewController : UIViewController {
     @IBOutlet weak var listView: UITableView!
     /// 选项数据源
     let titles = ["默认样式"]
+    let types = [CWBannerStyle.normal]
 }
 
 extension SViewController: UITableViewDelegate, UITableViewDataSource {
     // cell selected
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
+        let type = self.types[indexPath.row]
+        let showVC = ShowViewController.init(style: type)
+        showVC.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(showVC, animated: true)
     }
     // cell numbers
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
