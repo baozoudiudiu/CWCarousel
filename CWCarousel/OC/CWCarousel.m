@@ -52,6 +52,10 @@
     return self;
 }
 
+- (void)dealloc {
+    NSLog(@"%s", __func__);
+}
+
 - (void)willMoveToSuperview:(UIView *)newSuperview {
     newSuperview.clipsToBounds = NO;
     if(self.customPageControl == nil && self.pageControl.superview == nil) {

@@ -28,6 +28,10 @@
     return self;
 }
 
+- (void)dealloc {
+    NSLog(@"%s", __func__);
+}
+
 - (void)initial {
     self.itemSpace_H = 1;
     self.itemSpace_V = 1;

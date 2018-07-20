@@ -22,7 +22,9 @@
 @end
 
 @implementation ViewController
-
+- (void)dealloc {
+    NSLog(@"%s", __func__);
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self createButtons];
@@ -38,6 +40,7 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     if(self.carousel) {
+        [self.carousel releaseTimer];
         [self.carousel removeFromSuperview];
         self.carousel = nil;
     }
