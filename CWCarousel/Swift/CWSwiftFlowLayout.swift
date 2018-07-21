@@ -43,7 +43,7 @@ class CWSwiftFlowLayout: UICollectionViewFlowLayout {
             let width = self.collectionView!.frame.width
             let height = self.collectionView!.frame.height
             self.itemSize = CGSize.init(width: width, height: height)
-            self.minimumLineSpacing = 1.0
+            self.minimumLineSpacing = self.itemSpace
         default:
             ()
         }
@@ -62,5 +62,7 @@ class CWSwiftFlowLayout: UICollectionViewFlowLayout {
     //MARK: - Property
     /// banner风格
     let style: CWBannerStyle
+    /// 每张图之间的间距, 默认为0
+    var itemSpace: CGFloat = 0
 }
 
