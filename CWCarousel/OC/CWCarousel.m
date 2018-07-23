@@ -217,6 +217,9 @@
  @return 业务需求下标
  */
 - (NSInteger)caculateIndex:(NSInteger)factIndex {
+    if (self.numbers <= 0) {
+        return 0;
+    }
     NSInteger row = factIndex % [self numbers];
     return row;
 }
