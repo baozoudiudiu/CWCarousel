@@ -44,7 +44,7 @@ class ShowViewController: UIViewController {
         let banner = CWBanner.init(frame: CGRect.init(x: 0, y: 100, width: UIScreen.main.bounds.width, height: 240), flowLayout: layout)
         self.view.addSubview(banner)
         
-        banner.backgroundColor = UIColor.red
+        banner.backgroundColor = self.view.backgroundColor
         banner.delegate = self
         banner.banner.register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellReuseId)
         
@@ -66,6 +66,8 @@ extension ShowViewController: CWBannerDelegate {
             imgView = UIImageView.init(frame: cell.contentView.bounds)
             imgView?.tag = 999
             cell.contentView.addSubview(imgView!)
+            imgView?.layer.cornerRadius = 4.0
+            imgView?.layer.masksToBounds = true
             
             label = UILabel.init(frame: CGRect.init(x: 30, y: 0, width: 60, height: 30))
             (label as! UILabel).textColor = UIColor.white

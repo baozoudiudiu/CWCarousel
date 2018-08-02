@@ -26,9 +26,14 @@ class SViewController : UIViewController {
     @IBOutlet weak var listView: UITableView!
     /// 选项数据源
     let titles = ["默认样式",
-                  "可以看到前后两张(正常样式)"]
+                  "可以看到前后两张(正常样式)",
+                  "可以看到前后两张(两边缩放)",
+                  "可以看到前后两张(中间一张放大)"]
+    
     let types = [CWBannerStyle.normal,
-                 CWBannerStyle.preview_normal]
+                 CWBannerStyle.preview_normal,
+                 CWBannerStyle.preview_zoom,
+                 CWBannerStyle.preview_big]
 }
 
 extension SViewController: UITableViewDelegate, UITableViewDataSource {

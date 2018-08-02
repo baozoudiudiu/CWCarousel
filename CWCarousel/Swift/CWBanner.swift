@@ -18,7 +18,9 @@ class CWBanner: UIView {
     //MARK: - 构造方法
     init(frame: CGRect, flowLayout: CWSwiftFlowLayout) {
         self.flowLayout = flowLayout
-        super.init(frame: frame)
+        var rect = frame
+        rect.size.height = frame.height + flowLayout.addHeight(frame.height)
+        super.init(frame: rect)
         self.configureBanner()
     }
     
@@ -36,19 +38,22 @@ class CWBanner: UIView {
     let flowLayout: CWSwiftFlowLayout
     /// collectionView
     lazy var banner: UICollectionView = {
-        let b = UICollectionView.init(frame: self.bounds, collectionViewLayout: self.flowLayout)
+        let rect = self.bounds
+        let b = UICollectionView.init(frame: rect, collectionViewLayout: self.flowLayout)
         b.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(b)
         b.delegate = self
         b.dataSource = self
         b.showsHorizontalScrollIndicator = false
         b.decelerationRate = 0
+        b.backgroundColor = self.backgroundColor
         return b
     }()
     /// 外部代理委托
     weak var delegate: CWBannerDelegate?
     /// 当前居中展示的cell的下标
     var currentIndexPath: IndexPath = IndexPath.init(row: 0, section: 0)
+    
 }
 
 // MARK: - OPEN METHOD
