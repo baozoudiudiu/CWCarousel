@@ -1,6 +1,7 @@
 # CWCarousel
 
 ####基于collectionView实现的通用无限轮播图封装.
+> 代码实例为oc代码, 项目中已有swift版本,请自行下载
 
 <!--![example.gif](https://github.com/baozoudiudiu/CWCarousel/blob/master/CWCarousel/Sources/example.gif)-->
 ![example.gif](https://upload-images.jianshu.io/upload_images/3096223-64b23965562677f7.gif?imageMogr2/auto-orient/strip)
