@@ -21,11 +21,14 @@ class SViewController : UIViewController {
     override func didReceiveMemoryWarning() {
         
     }
+    
     //MARK: - Property
     @IBOutlet weak var listView: UITableView!
     /// 选项数据源
-    let titles = ["默认样式"]
-    let types = [CWBannerStyle.normal]
+    let titles = ["默认样式",
+                  "可以看到前后两张(正常样式)"]
+    let types = [CWBannerStyle.normal,
+                 CWBannerStyle.preview_normal]
 }
 
 extension SViewController: UITableViewDelegate, UITableViewDataSource {
@@ -37,10 +40,12 @@ extension SViewController: UITableViewDelegate, UITableViewDataSource {
         showVC.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(showVC, animated: true)
     }
+    
     // cell numbers
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.titles.count
     }
+    
     // cells
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let idStr = "cellId"
@@ -52,6 +57,7 @@ extension SViewController: UITableViewDelegate, UITableViewDataSource {
         cell?.textLabel?.text = self.titles[indexPath.row]
         return cell!
     }
+    
     // cell height
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 44

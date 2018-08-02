@@ -14,6 +14,8 @@ enum CWBannerStyle {
     case unknown
     /// 默认样式
     case normal
+    /// 自定义样式一, 中间一张居中,前后2张图有部分内容在屏幕内可以预览到
+    case preview_normal
 }
 
 class CWSwiftFlowLayout: UICollectionViewFlowLayout {
@@ -22,9 +24,11 @@ class CWSwiftFlowLayout: UICollectionViewFlowLayout {
         self.style = style
         super.init()
     }
+    
     deinit {
         NSLog("%s", #function);
     }
+    
     required init?(coder aDecoder: NSCoder) {
         self.style = .unknown
         super.init(coder: aDecoder)
@@ -43,14 +47,22 @@ class CWSwiftFlowLayout: UICollectionViewFlowLayout {
             let width = self.collectionView!.frame.width
             let height = self.collectionView!.frame.height
             self.itemSize = CGSize.init(width: width, height: height)
-            self.minimumLineSpacing = self.itemSpace
+            self.minimumLineSpacing = self.itemSpace;
+        case .preview_normal:
+            self.scrollDirection = .horizontal
+            let height = self.collectionView!.frame.height
+            let width = self.collectionView!.frame.width * self.itemWidthScale
+            self.itemSize = CGSize.init(width: width, height: height)
+            self.minimumLineSpacing = self.itemSpace;
         default:
             ()
         }
     }
+    
     override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
         return true
     }
+    
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         if self.style == .normal {
             return super.layoutAttributesForElements(in: rect)
@@ -63,6 +75,12 @@ class CWSwiftFlowLayout: UICollectionViewFlowLayout {
     /// banner风格
     let style: CWBannerStyle
     /// 每张图之间的间距, 默认为0
-    var itemSpace: CGFloat = 0
+    var itemSpace: CGFloat = 1
+    
+    /*
+     *   preview_normal 样式下,cell的宽度占总宽度的比例
+     *   默认: 0.8
+     */
+    var itemWidthScale: CGFloat = 0.8
 }
 

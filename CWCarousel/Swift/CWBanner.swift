@@ -21,13 +21,16 @@ class CWBanner: UIView {
         super.init(frame: frame)
         self.configureBanner()
     }
+    
     deinit {
         NSLog("%s", #function);
     }
+    
     required init?(coder aDecoder: NSCoder) {
         self.flowLayout = CWSwiftFlowLayout.init(style: .unknown)
         super.init(coder: aDecoder)
     }
+    
     //MARK: - Property
     /// 自定义layout
     let flowLayout: CWSwiftFlowLayout
@@ -40,11 +43,6 @@ class CWBanner: UIView {
         b.dataSource = self
         b.showsHorizontalScrollIndicator = false
         b.decelerationRate = 0
-//        let dic = ["b" : b]
-//        var str = "H:|-0-[b]-0-|"
-//        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: str, options: [], metrics: nil, views: dic))
-//        str = "V:|-0-[b]-0-|"
-//        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: str, options: [], metrics: nil, views: dic))
         return b
     }()
     /// 外部代理委托
@@ -58,7 +56,8 @@ extension CWBanner {
     /// 刷新数据
     func freshBanner() {
         self.banner.reloadData()
-        self.scrollToIndexPathNoAnimated(self.originIndexPath())
+//        self.scrollToIndexPathNoAnimated(self.originIndexPath())
+        self.scrollToIndexPathAnimated(self.originIndexPath())
     }
 }
 
@@ -105,6 +104,7 @@ extension CWBanner {
     fileprivate func scrollToIndexPathAnimated(_ indexPath: IndexPath) {
         self.banner.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
     }
+    
     fileprivate func scrollToIndexPathNoAnimated(_ indexPath: IndexPath) {
         self.banner.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
     }
@@ -190,6 +190,7 @@ extension CWBanner {
     fileprivate var factNumbers: Int {
         return 10
     }
+    
     /// 业务层实际需要展示的cell个数
     fileprivate var numbers: Int {
         return self.delegate?.bannerNumbers() ?? 0
@@ -201,6 +202,7 @@ extension IndexPath {
     static func + (left: IndexPath, right: Int) -> IndexPath {
         return IndexPath.init(row: left.row + right, section: left.section)
     }
+    
     /// 重载 - 号运算符
     static func - (left: IndexPath, right: Int) -> IndexPath {
         return IndexPath.init(row: left.row - right, section: left.section)
