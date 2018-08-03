@@ -16,9 +16,9 @@ protocol CWBannerDelegate: AnyObject {
 
 protocol CWBannerPageControl where Self: UIView {
     /// 当前下标
-    var currentPage: Int? {get}
+    var currentPage: Int? {set get}
     /// 总数
-    var numberOfPages: Int? {get}
+    var numberOfPages: Int? {get set}
     /// 设置当前下标,可以在这里处理一些动画效果
     func setCurrentPage(_ page: Int) -> Void
     /// 设置总数,可以在这里处理视图的创建
