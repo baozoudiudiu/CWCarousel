@@ -30,7 +30,7 @@ class CWSwiftFlowLayout: UICollectionViewFlowLayout {
     }
     
     deinit {
-        NSLog("%s", #function);
+        NSLog("[%@ -- %@]",NSStringFromClass(self.classForCoder) ,#function);
     }
     
     required init?(coder aDecoder: NSCoder) {

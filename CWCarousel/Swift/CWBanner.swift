@@ -25,7 +25,7 @@ class CWBanner: UIView {
     }
     
     deinit {
-        NSLog("%s", #function);
+        NSLog("[%@ -- %@]",NSStringFromClass(self.classForCoder), #function);
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -53,6 +53,12 @@ class CWBanner: UIView {
     weak var delegate: CWBannerDelegate?
     /// 当前居中展示的cell的下标
     var currentIndexPath: IndexPath = IndexPath.init(row: 0, section: 0)
+    /// 是否开启自动滚动 (默认是关闭的)
+    var autoPlay = false
+    /// 定时器
+    var timer: Timer?
+    /// 自动滚动时间间隔,默认3s
+    var timeInterval: TimeInterval = 3.0
     
 }
 
@@ -61,8 +67,55 @@ extension CWBanner {
     /// 刷新数据
     func freshBanner() {
         self.banner.reloadData()
-//        self.scrollToIndexPathNoAnimated(self.originIndexPath())
-        self.scrollToIndexPathAnimated(self.originIndexPath())
+        self.scrollToIndexPathNoAnimated(self.originIndexPath())
+        if self.autoPlay {
+            self.play()
+        }
+    }
+    
+    fileprivate func play() {
+        if self.timer == nil {
+            if #available(iOS 10.0, *) {
+                self.timer = Timer.scheduledTimer(withTimeInterval: self.timeInterval, repeats: true, block: {[weak self] (timer) in
+                    self?.nextCell()
+                })
+            } else {
+                self.timer = Timer.scheduledTimer(timeInterval: self.timeInterval, target: self, selector: #selector(nextCell), userInfo: nil, repeats: true)
+            }
+        }
+        self.timer?.fireDate = Date.init(timeIntervalSinceNow: self.timeInterval)
+    }
+    
+    @objc fileprivate func nextCell() {
+        // 这里不用考虑下标越界的问题,其他地方做了保护
+        self.currentIndexPath = self.currentIndexPath + 1;
+        self.scrollViewWillBeginDecelerating(self.banner)
+    }
+    
+    /// 继续滚动轮播图
+    func resumePlay() {
+        self.play()
+    }
+    
+    /// 暂停自动滚动
+    func pause() {
+        if let timer = self.timer {
+            timer.fireDate = Date.distantFuture
+        }
+    }
+    
+    /// 停止滚动(释放timer资源,防止内存泄漏)
+    func stop() {
+        self.pause()
+        self.releaseTimer()
+    }
+    
+    /// 释放timer资源,防止内存泄漏
+    fileprivate func releaseTimer() {
+        if let timer = self.timer {
+            timer.invalidate()
+            self.timer = nil
+        }
     }
 }
 
@@ -127,6 +180,9 @@ extension CWBanner {
     /// 开始拖拽
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         self.banner.isPagingEnabled = true
+        if self.autoPlay {
+            self.pause()
+        }
     }
     
     /// 将要结束拖拽
@@ -162,11 +218,16 @@ extension CWBanner {
         self.banner.isPagingEnabled = false
         // 边缘检测,是否滑到了最边缘
         self.checkOutOfBounds()
+        if self.autoPlay {
+            self.resumePlay()
+        }
     }
     
     /// 滚动中
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        
+        if self.autoPlay {
+            self.pause()
+        }
     }
 }
 

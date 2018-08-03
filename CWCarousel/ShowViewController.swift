@@ -20,10 +20,29 @@ class ShowViewController: UIViewController {
         self.bannerStyle = .unknown
         super.init(coder: aDecoder)
     }
+    
+    deinit {
+        NSLog("[%@ -- %@]", NSStringFromClass(self.classForCoder), #function)
+    }
+    
     //MARK: - LIFE CYCLE
     override func viewDidLoad() {
         super.viewDidLoad()
         self.configureUI()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if self.bannerView.autoPlay {
+            self.bannerView.resumePlay()
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if self.bannerView.autoPlay {
+            self.bannerView.pause()
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -47,6 +66,9 @@ class ShowViewController: UIViewController {
         banner.backgroundColor = self.view.backgroundColor
         banner.delegate = self
         banner.banner.register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellReuseId)
+        
+        banner.autoPlay = true
+        banner.timeInterval = 2
         
         return banner
     }()
