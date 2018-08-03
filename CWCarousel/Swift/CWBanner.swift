@@ -14,10 +14,22 @@ protocol CWBannerDelegate: AnyObject {
     func didSelected(banner: CWBanner, index: Int, indexPath: IndexPath)
 }
 
+protocol CWBannerPageControl where Self: UIView {
+    /// 当前下标
+    var currentPage: Int? {get}
+    /// 总数
+    var numberOfPages: Int? {get}
+    /// 设置当前下标,可以在这里处理一些动画效果
+    func setCurrentPage(_ page: Int) -> Void
+    /// 设置总数,可以在这里处理视图的创建
+    func setNumberOfPages(_ number: Int) -> Void
+}
+
 class CWBanner: UIView {
     //MARK: - 构造方法
-    init(frame: CGRect, flowLayout: CWSwiftFlowLayout) {
+    init(frame: CGRect, flowLayout: CWSwiftFlowLayout, delegate: CWBannerDelegate) {
         self.flowLayout = flowLayout
+        self.delegate = delegate
         var rect = frame
         rect.size.height = frame.height + flowLayout.addHeight(frame.height)
         super.init(frame: rect)
@@ -42,6 +54,7 @@ class CWBanner: UIView {
         let b = UICollectionView.init(frame: rect, collectionViewLayout: self.flowLayout)
         b.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(b)
+        self.sendSubview(toBack: b)
         b.delegate = self
         b.dataSource = self
         b.showsHorizontalScrollIndicator = false
@@ -52,13 +65,38 @@ class CWBanner: UIView {
     /// 外部代理委托
     weak var delegate: CWBannerDelegate?
     /// 当前居中展示的cell的下标
-    var currentIndexPath: IndexPath = IndexPath.init(row: 0, section: 0)
+    var currentIndexPath: IndexPath = IndexPath.init(row: 0, section: 0) {
+        didSet {
+            let current = self.caculateIndex(indexPath: self.currentIndexPath)
+            if self.customPageControl == nil {
+                self.pageControl.currentPage = current
+            }else {
+                self.customPageControl?.setCurrentPage(current)
+            }
+        }
+    }
     /// 是否开启自动滚动 (默认是关闭的)
     var autoPlay = false
     /// 定时器
     var timer: Timer?
     /// 自动滚动时间间隔,默认3s
     var timeInterval: TimeInterval = 3.0
+    /// 默认的pageControl (默认位置在中下方,需要调整位置请自行设置frame)
+    lazy var pageControl: UIPageControl = {
+        let count = self.delegate?.bannerNumbers()
+        let width = CGFloat(5) * CGFloat((count ?? 0))
+        let height: CGFloat = 10
+        let pageControl = UIPageControl.init(frame: CGRect.init(x: 0, y: 0, width: width, height: height))
+        pageControl.center = CGPoint.init(x: self.bounds.width * 0.5, y: self.bounds.height - height * 0.5 - 8)
+        pageControl.currentPage = 0
+        pageControl.numberOfPages = self.delegate?.bannerNumbers() ?? 0
+        pageControl.pageIndicatorTintColor = UIColor.white
+        pageControl.currentPageIndicatorTintColor = UIColor.black
+        pageControl.isUserInteractionEnabled = false;
+        return pageControl
+    }()
+    /// 自定义的pageControl
+    var customPageControl: CWBannerPageControl?
     
 }
 
@@ -171,7 +209,11 @@ extension CWBanner {
 // MARK: - UI
 extension CWBanner {
     fileprivate func configureBanner() {
-        
+        if self.customPageControl == nil {
+            self.addSubview(self.pageControl)
+        }else {
+            self.addSubview(self.customPageControl as! UIView)
+        }
     }
 }
 

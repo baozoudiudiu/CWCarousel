@@ -60,11 +60,10 @@ class ShowViewController: UIViewController {
     
     lazy var bannerView: CWBanner = {
         let layout = CWSwiftFlowLayout.init(style: self.bannerStyle)
-        let banner = CWBanner.init(frame: CGRect.init(x: 0, y: 100, width: UIScreen.main.bounds.width, height: 240), flowLayout: layout)
+        let banner = CWBanner.init(frame: CGRect.init(x: 0, y: 100, width: UIScreen.main.bounds.width, height: 240), flowLayout: layout, delegate: self)
         self.view.addSubview(banner)
         
         banner.backgroundColor = self.view.backgroundColor
-        banner.delegate = self
         banner.banner.register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellReuseId)
         
         banner.autoPlay = true
