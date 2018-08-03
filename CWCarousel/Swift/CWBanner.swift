@@ -91,8 +91,8 @@ class CWBanner: UIView {
         pageControl.currentPage = 0
         pageControl.numberOfPages = self.delegate?.bannerNumbers() ?? 0
         pageControl.pageIndicatorTintColor = UIColor.white
-        pageControl.currentPageIndicatorTintColor = UIColor.black
         pageControl.isUserInteractionEnabled = false;
+        pageControl.currentPageIndicatorTintColor = UIColor.black
         return pageControl
     }()
     /// 自定义的pageControl
