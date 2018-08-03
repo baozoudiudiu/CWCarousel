@@ -61,15 +61,15 @@ CWFlowLayout *flowLayout = [[CWFlowLayout alloc] initWithStyle:[self styleFromTa
 @return 实例对象
 */
 - (instancetype _Nullable )initWithFrame:(CGRect)frame
-delegate:(id<CWCarouselDelegate> _Nullable)delegate
-datasource:(id<CWCarouselDatasource> _Nullable)datasource
-flowLayout:(nonnull CWFlowLayout *)flowLayout;
+                                delegate:(id<CWCarouselDelegate> _Nullable)delegate
+                              datasource:(id<CWCarouselDatasource> _Nullable)datasource
+                              flowLayout:(nonnull CWFlowLayout *)flowLayout;
 
 // egg:
 CWCarousel *carousel = [[CWCarousel alloc] initWithFrame:self.animationView.bounds
-delegate:self
-datasource:self
-flowLayout:flowLayout];
+                                                delegate:self
+                                              datasource:self
+                                              flowLayout:flowLayout];
 ```
 3. 注册自定义cell,并实现代理方法,刷新视图
 ```
@@ -79,21 +79,21 @@ flowLayout:flowLayout];
 #pragma mark - Delegate
 // 每个轮播图cell样式
 - (UICollectionViewCell *)viewForCarousel:(CWCarousel *)carousel indexPath:(NSIndexPath *)indexPath index:(NSInteger)index{
-UICollectionViewCell *cell = [carousel.carouselView dequeueReusableCellWithReuseIdentifier:@"cellId" forIndexPath:indexPath];
-/*
-your code
-*/
-return cell;
+    UICollectionViewCell *cell = [carousel.carouselView dequeueReusableCellWithReuseIdentifier:@"cellId" forIndexPath:indexPath];
+    /*
+    your code
+    */
+    return cell;
 }
 
 // 点击代理回调
 - (void)CWCarousel:(CWCarousel *)carousel didSelectedAtIndex:(NSInteger)index {
-NSLog(@"...%ld...", index);
+    NSLog(@"...%ld...", index);
 }
 
 // 轮播图个数
 - (NSInteger)numbersForCarousel {
-return kCount;
+    return kCount;
 }
 ```
 * 具体UI样式修改都有具体的属性,详情请查看对应类的.h文件即可. 
