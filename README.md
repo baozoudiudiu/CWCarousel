@@ -1,6 +1,6 @@
 # CWCarousel
 
-##代码实例为oc代码, 项目中已有swift版本,请自行下载##
+##代码实例为oc代码, 项目中已有swift版本,请自行下载
 
 ####基于collectionView实现的通用无限轮播图封装.
 
