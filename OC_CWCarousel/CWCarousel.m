@@ -76,6 +76,9 @@
 }
 
 - (void)freshCarousel {
+    if([self numbers] <= 0) {
+        return;
+    }
     [self.carouselView reloadData];
     [self.carouselView scrollToItemAtIndexPath:[self originIndexPath] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
     self.carouselView.userInteractionEnabled = YES;
@@ -233,6 +236,9 @@
 }
 
 - (void)nextCell {
+    if([self numbers] <= 0) {
+        return;
+    }
     if(self.currentIndexPath.row < [self infactNumbers] - 1) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.currentIndexPath.row + 1 inSection:self.currentIndexPath.section];
         [self.carouselView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
@@ -278,7 +284,10 @@
 }
 
 - (NSInteger)collectionView:(nonnull UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return [self infactNumbers];
+    if([self numbers] > 0)
+        return [self infactNumbers];
+    else
+        return 0;
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
