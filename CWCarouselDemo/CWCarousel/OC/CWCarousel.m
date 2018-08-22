@@ -49,11 +49,22 @@
         self.autoTimInterval = 3;
         [self configureView];
     }
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appBecomeInactive:) name:UIApplicationWillResignActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
     return self;
+}
+
+- (void)appBecomeInactive:(NSNotification *)notification {
+    [self adjustErrorCell:YES];
+}
+
+- (void)appBecomeActive:(NSNotification *)notification {
+    [self adjustErrorCell:YES];
 }
 
 - (void)dealloc {
     NSLog(@"%s", __func__);
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)willMoveToSuperview:(UIView *)newSuperview {
@@ -106,21 +117,7 @@
         self.currentIndexPath = [NSIndexPath indexPathForRow:self.currentIndexPath.row - 1 inSection:self.currentIndexPath.section];
     }else if (velocity.x == 0) {
         //还有一种情况,当滑动后手指按住不放,然后松开,此时的加速度其实是为0的
-        NSArray <NSIndexPath *> *indexPaths = [self.carouselView indexPathsForVisibleItems];
-        NSMutableArray <UICollectionViewLayoutAttributes *> *attriArr = [NSMutableArray arrayWithCapacity:indexPaths.count];
-        [indexPaths enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            UICollectionViewLayoutAttributes *attri = [self.carouselView layoutAttributesForItemAtIndexPath:obj];
-            [attriArr addObject:attri];
-        }];
-        CGFloat centerX = scrollView.contentOffset.x + CGRectGetWidth(self.carouselView.frame) * 0.5;
-        __block CGFloat minSpace = MAXFLOAT;
-        [attriArr enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            obj.zIndex = 0;
-            if(ABS(minSpace) > ABS(obj.center.x - centerX)) {
-                minSpace = obj.center.x - centerX;
-                self.currentIndexPath = obj.indexPath;
-            }
-        }];
+        [self adjustErrorCell:NO];
     }
 }
 
@@ -227,6 +224,27 @@
     return row;
 }
 
+- (void)adjustErrorCell:(BOOL)isScroll {
+    NSArray <NSIndexPath *> *indexPaths = [self.carouselView indexPathsForVisibleItems];
+    NSMutableArray <UICollectionViewLayoutAttributes *> *attriArr = [NSMutableArray arrayWithCapacity:indexPaths.count];
+    [indexPaths enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        UICollectionViewLayoutAttributes *attri = [self.carouselView layoutAttributesForItemAtIndexPath:obj];
+        [attriArr addObject:attri];
+    }];
+    CGFloat centerX = self.carouselView.contentOffset.x + CGRectGetWidth(self.carouselView.frame) * 0.5;
+    __block CGFloat minSpace = MAXFLOAT;
+    [attriArr enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        obj.zIndex = 0;
+        if(ABS(minSpace) > ABS(obj.center.x - centerX)) {
+            minSpace = obj.center.x - centerX;
+            self.currentIndexPath = obj.indexPath;
+        }
+    }];
+    if(isScroll) {
+        [self scrollViewWillBeginDecelerating:self.carouselView];
+    }
+}
+
 - (void)play {
     [self stop];
     if(self.isPause) {
@@ -272,6 +290,7 @@
     self.carouselView.showsVerticalScrollIndicator = NO;
     self.carouselView.showsHorizontalScrollIndicator = NO;
     self.carouselView.decelerationRate = 0;
+    [self.carouselView setExclusiveTouch:YES];
 }
 
 #pragma mark - < Delegate, Datasource >
