@@ -33,16 +33,12 @@ class ShowViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if self.bannerView.autoPlay {
-            self.bannerView.resumePlay()
-        }
+        self.bannerView.bannerWillAppear()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if self.bannerView.autoPlay {
-            self.bannerView.pause()
-        }
+        self.bannerView.bannerWillDisAppear()
     }
     
     override func didReceiveMemoryWarning() {

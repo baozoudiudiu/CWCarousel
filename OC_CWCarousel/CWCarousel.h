@@ -109,4 +109,14 @@
  如果开启自动轮播,销毁前需要调用该方法,释放定时器.否则可能内存泄漏
  */
 - (void)releaseTimer;
+
+/**
+ 轮播图所处控制器WillAppear方法里调用
+ */
+- (void)controllerWillAppear;
+
+/**
+ 轮播图所处控制器WillDisAppear方法里调用
+ */
+- (void)controllerWillDisAppear;
 @end

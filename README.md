@@ -98,6 +98,19 @@ CWCarousel *carousel = [[CWCarousel alloc] initWithFrame:self.animationView.boun
     return kCount;
 }
 ```
+
+4. 为了流畅性和避免概率图片位置错乱问题,当开启自动滚动时,在banner所处的控制器生命周期中需要调用以下对应方法
+```
+/**
+轮播图所处控制器WillAppear方法里调用
+*/
+- (void)controllerWillAppear;
+
+/**
+轮播图所处控制器WillDisAppear方法里调用
+*/
+- (void)controllerWillDisAppear;
+```
 * 具体UI样式修改都有具体的属性,详情请查看对应类的.h文件即可. 
 
 * 如有问题和bug,欢迎指正.

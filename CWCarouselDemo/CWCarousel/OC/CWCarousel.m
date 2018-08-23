@@ -62,6 +62,20 @@
     [self adjustErrorCell:YES];
 }
 
+- (void)controllerWillAppear {
+    if(self.isAuto) {
+        [self resumePlay];
+    }
+    [self adjustErrorCell:YES];
+}
+
+- (void)controllerWillDisAppear {
+    if(self.isAuto) {
+        [self pause];
+    }
+    [self adjustErrorCell:YES];
+}
+
 - (void)dealloc {
     NSLog(@"%s", __func__);
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -290,14 +304,14 @@
     self.carouselView.showsVerticalScrollIndicator = NO;
     self.carouselView.showsHorizontalScrollIndicator = NO;
     self.carouselView.decelerationRate = 0;
-    [self.carouselView setExclusiveTouch:YES];
 }
 
 #pragma mark - < Delegate, Datasource >
 - (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
     if(self.datasource &&
        [self.datasource respondsToSelector:@selector(viewForCarousel:indexPath:index:)]) {
-        return [self.datasource viewForCarousel:self indexPath:indexPath index:[self caculateIndex:indexPath.row]];
+        UICollectionViewCell *cell = [self.datasource viewForCarousel:self indexPath:indexPath index:[self caculateIndex:indexPath.row]];
+        return cell;
     }
     return nil;
 }

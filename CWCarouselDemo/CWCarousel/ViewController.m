@@ -29,7 +29,6 @@
     [super viewDidLoad];
     [self createButtons];
     [self.cusSwitch addTarget:self action:@selector(switchChanged:) forControlEvents:UIControlEventValueChanged];
-//    [self configureUI];
 }
 - (void)configureUI:(NSInteger)tag {
     CATransition *tr = [CATransition animation];
@@ -71,16 +70,12 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    if(self.carousel.isAuto) {
-        [self.carousel resumePlay];
-    }
+    [self.carousel controllerWillAppear];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    if(self.carousel.isAuto) {
-        [self.carousel pause];
-    }
+    [self.carousel controllerWillDisAppear];
 }
 #pragma mark - < 事件响应 >
 - (void)buttonClick:(UIButton *)sender {

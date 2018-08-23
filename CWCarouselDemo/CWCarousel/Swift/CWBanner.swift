@@ -155,6 +155,20 @@ extension CWBanner {
             self.timer = nil
         }
     }
+    
+    /// banner所处控制器WillAppear方法中调用
+    func bannerWillAppear() {
+        if(self.autoPlay) {
+            self.resumePlay()
+        }
+    }
+    
+    /// banner所处控制器WillDisAppear方法中调用
+    func bannerWillDisAppear() {
+        if(self.autoPlay) {
+            self.pause()
+        }
+    }
 }
 
 // MARK: - LOGIC HELPER

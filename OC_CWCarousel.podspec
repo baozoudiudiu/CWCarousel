@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name         = "OC_CWCarousel"
-  s.version      = "1.0.1"
-  s.summary      = "banner."
+  s.version      = "1.0.2"
+  s.summary      = "banner. 无限滚动轮播图"
   s.homepage     = "https://github.com/baozoudiudiu/CWCarousel"
   s.license      = { :type => 'MIT', :file => 'LICENSE' }
   s.author       = { "baozoudiudiu" => "diudiu_WangChen@163.com" }
