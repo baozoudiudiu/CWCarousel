@@ -38,6 +38,7 @@ class CWBanner: UIView {
     
     deinit {
         NSLog("[%@ -- %@]",NSStringFromClass(self.classForCoder), #function);
+        NotificationCenter.default.removeObserver(self)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -161,6 +162,7 @@ extension CWBanner {
         if(self.autoPlay) {
             self.resumePlay()
         }
+        self.adjustErrorCell(isScroll: true)
     }
     
     /// banner所处控制器WillDisAppear方法中调用
@@ -168,6 +170,7 @@ extension CWBanner {
         if(self.autoPlay) {
             self.pause()
         }
+        self.adjustErrorCell(isScroll: true)
     }
 }
 
@@ -218,6 +221,44 @@ extension CWBanner {
     fileprivate func scrollToIndexPathNoAnimated(_ indexPath: IndexPath) {
         self.banner.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
     }
+    
+    /// cell错位检测和调整
+    fileprivate func adjustErrorCell(isScroll: Bool)
+    {
+        let indexPaths = self.banner.indexPathsForVisibleItems
+        var attriArr = [UICollectionViewLayoutAttributes?]()
+        for indexPath in indexPaths
+        {
+            let attri = self.banner.layoutAttributesForItem(at: indexPath)
+            attriArr.append(attri)
+        }
+        let centerX: CGFloat = self.banner.contentOffset.x + self.banner.frame.width * 0.5
+        var minSpace = CGFloat(MAXFLOAT)
+        for atr in attriArr
+        {
+            if let obj = atr
+            {
+                obj.zIndex = 0;
+                if(abs(minSpace) > abs(obj.center.x - centerX))
+                {
+                    minSpace = obj.center.x - centerX;
+                    self.currentIndexPath = obj.indexPath;
+                }
+            }
+        }
+        if isScroll
+        {
+            self.scrollViewWillBeginDecelerating(self.banner)
+        }
+    }
+    
+    @objc fileprivate func appActive(_ notify: Notification) {
+        self.adjustErrorCell(isScroll: true)
+    }
+    
+    @objc fileprivate func appInactive(_ notify: Notification) {
+        self.adjustErrorCell(isScroll: true)
+    }
 }
 
 // MARK: - UI
@@ -228,6 +269,14 @@ extension CWBanner {
         }else {
             self.addSubview(self.customPageControl as! UIView)
         }
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(appActive(_:)), name: NSNotification.Name.UIApplicationDidBecomeActive ,
+                                               object:nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(appInactive(_:)),
+                                               name: NSNotification.Name.UIApplicationWillResignActive,
+                                               object: nil)
     }
 }
 
@@ -250,6 +299,8 @@ extension CWBanner {
         }else if velocity.x < 0 {
             //右滑, 上一张
             self.currentIndexPath = self.currentIndexPath - 1
+        }else if velocity.x == 0 {
+            self.adjustErrorCell(isScroll: false)
         }
     }
     

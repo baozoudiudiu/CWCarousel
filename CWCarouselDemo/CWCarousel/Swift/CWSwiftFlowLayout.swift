@@ -138,7 +138,7 @@ extension CWSwiftFlowLayout {
     ///   - block: 计算方法闭包
     /// - Returns:
     fileprivate func caculateScale(rect: CGRect, block: (CGFloat, CGFloat) -> CGFloat) -> [UICollectionViewLayoutAttributes]? {
-        let arr = super.layoutAttributesForElements(in: rect)
+        let arr = super.layoutAttributesForElements(in: rect)?.map({ return $0.copy() }) as! [UICollectionViewLayoutAttributes]?
         let centerX = self.collectionView!.contentOffset.x + self.collectionView!.frame.width * 0.5
         let width = self.collectionView!.frame.width * self.itemWidthScale
         var maxScale: CGFloat = 0
