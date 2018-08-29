@@ -365,7 +365,7 @@ extension CWBanner: UICollectionViewDelegate, UICollectionViewDataSource, UIColl
 extension CWBanner {
     /// 背地里实际返回的cell个数
     fileprivate var factNumbers: Int {
-        return 10
+        return 100
     }
     
     /// 业务层实际需要展示的cell个数
