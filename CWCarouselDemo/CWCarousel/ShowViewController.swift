@@ -98,7 +98,15 @@ extension ShowViewController: CWBannerDelegate {
     }
     
     func didSelected(banner: CWBanner, index: Int, indexPath: IndexPath) {
-        print("...\(index) click...")
+        print("点击 \(index) click...")
+    }
+    
+    func didStartScroll(banner: CWBanner, index: Int, indexPath: IndexPath) {
+        print("开始滑动: \(index) ...")
+    }
+    
+    func didEndScroll(banner: CWBanner, index: Int, indexPath: IndexPath) {
+        print("结束滑动: \(index) ...")
     }
 }
 
