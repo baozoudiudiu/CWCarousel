@@ -12,6 +12,8 @@ protocol CWBannerDelegate: AnyObject {
     func bannerNumbers() -> Int
     func bannerView(banner: CWBanner, index: Int, indexPath: IndexPath) -> UICollectionViewCell
     func didSelected(banner: CWBanner, index: Int, indexPath: IndexPath)
+    func didStartScroll(banner: CWBanner, index: Int, indexPath: IndexPath)
+    func didEndScroll(banner: CWBanner, index: Int, indexPath: IndexPath)
 }
 
 protocol CWBannerPageControl where Self: UIView {
@@ -288,6 +290,7 @@ extension CWBanner {
         if self.autoPlay {
             self.pause()
         }
+        self.delegate?.didStartScroll(banner: self, index: self.caculateIndex(indexPath: self.currentIndexPath), indexPath: self.currentIndexPath)
     }
     
     /// 将要结束拖拽
@@ -328,6 +331,7 @@ extension CWBanner {
         if self.autoPlay {
             self.resumePlay()
         }
+        self.delegate?.didEndScroll(banner: self, index: self.caculateIndex(indexPath: self.currentIndexPath), indexPath: self.currentIndexPath)
     }
     
     /// 滚动中
@@ -361,7 +365,7 @@ extension CWBanner: UICollectionViewDelegate, UICollectionViewDataSource, UIColl
 extension CWBanner {
     /// 背地里实际返回的cell个数
     fileprivate var factNumbers: Int {
-        return 10
+        return 100
     }
     
     /// 业务层实际需要展示的cell个数
