@@ -105,6 +105,7 @@ class CWBanner: UIView {
         pageControl.pageIndicatorTintColor = UIColor.white
         pageControl.isUserInteractionEnabled = false;
         pageControl.currentPageIndicatorTintColor = UIColor.black
+        pageControl.translatesAutoresizingMaskIntoConstraints = false;
         return pageControl
     }()
     /// 自定义的pageControl
@@ -298,6 +299,14 @@ extension CWBanner {
     fileprivate func configureBanner() {
         if self.customPageControl == nil {
             self.addSubview(self.pageControl)
+            self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[control]-0-|",
+                                                               options: [],
+                                                               metrics: nil,
+                                                               views: ["control" : self.pageControl]))
+            self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[control(30)]-0-|",
+                                                               options: [],
+                                                               metrics: nil,
+                                                               views: ["control" : self.pageControl]))
         }else {
             self.addSubview(self.customPageControl as! UIView)
         }
