@@ -33,12 +33,12 @@
 
 - (instancetype)initWithFrame:(CGRect)frame delegate:(id<CWCarouselDelegate>)delegate datasource:(id<CWCarouselDatasource>)datasource flowLayout:(CWFlowLayout *)flowLayout {
     CGFloat addHeight = 0;
-    if(flowLayout.style == CWCarouselStyle_H_3) {
-        /* 如果是CWCarouselStyle_H_3, 因为中间一张图片放大的原因,需要扩充一下frame的高度,所以会和实际的传入的frame
-         的高度有部分偏差
-         */
-        addHeight = (flowLayout.maxScale - 1) * CGRectGetHeight(frame);
-    }
+//    if(flowLayout.style == CWCarouselStyle_H_3) {
+//        /* 如果是CWCarouselStyle_H_3, 因为中间一张图片放大的原因,需要扩充一下frame的高度,所以会和实际的传入的frame
+//         的高度有部分偏差
+//         */
+//        addHeight = (flowLayout.maxScale - 1) * CGRectGetHeight(frame);
+//    }
     frame.size.height += addHeight;
     self.addHeight = addHeight;
     if(self = [super initWithFrame:frame]) {
@@ -85,7 +85,16 @@
     newSuperview.clipsToBounds = NO;
     if(self.customPageControl == nil && self.pageControl.superview == nil) {
         [self addSubview:self.pageControl];
-    }else if(self.customPageControl) {
+        self.pageControl.translatesAutoresizingMaskIntoConstraints = NO;
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[control]-0-|"
+                                                                     options:kNilOptions
+                                                                     metrics:nil
+                                                                       views:@{@"control" : self.pageControl}]];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[control(30)]-0-|"
+                                                                     options:kNilOptions
+                                                                     metrics:nil
+                                                                       views:@{@"control" : self.pageControl}]];
+    }else if(self.customPageControl || self.customPageControl.superview == nil) {
         [self addSubview:self.customPageControl];
     }
     [super willMoveToSuperview:newSuperview];
@@ -105,6 +114,7 @@
         return;
     }
     [self.carouselView reloadData];
+    [self.carouselView layoutIfNeeded];
     [self.carouselView scrollToItemAtIndexPath:[self originIndexPath] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
     self.carouselView.userInteractionEnabled = YES;
     if (self.isAuto) {
@@ -329,6 +339,7 @@
         [self.delegate CWCarousel:self didSelectedAtIndex:[self caculateIndex:indexPath.row]];
     }
 }
+
 #pragma mark - <setter>
 - (void)setBackgroundColor:(UIColor *)backgroundColor {
     self.carouselView.backgroundColor = backgroundColor;
@@ -341,14 +352,32 @@
     else
         self.customPageControl.currentPage = [self caculateIndex:currentIndexPath.row];
 }
+
 #pragma mark - < getter >
 - (UICollectionView *)carouselView {
     if(!_carouselView) {
-        self.carouselView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, self.addHeight * 0.5, self.frame.size.width, self.frame.size.height - self.addHeight) collectionViewLayout:self.flowLayout];
+//        self.carouselView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, self.addHeight * 0.5, self.frame.size.width, self.frame.size.height - self.addHeight) collectionViewLayout:self.flowLayout];
+        self.carouselView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:self.flowLayout];
         _carouselView.clipsToBounds = NO;
         _carouselView.delegate = self;
         _carouselView.dataSource = self;
+        _carouselView.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:_carouselView];
+        
+        NSDictionary *views = @{@"view" : self.carouselView};
+        NSDictionary *margins = @{@"top" : @(self.addHeight * 0.5),
+                                  @"bottom" : @(self.addHeight * 0.5)
+                                  };
+        NSString *str = @"H:|-0-[view]-0-|";
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:str
+                                                                     options:kNilOptions
+                                                                     metrics:margins
+                                                                       views:views]];
+        str = @"V:|-top-[view]-top-|";
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:str
+                                                                     options:kNilOptions
+                                                                     metrics:margins
+                                                                       views:views]];
     }
     return _carouselView;
 }
@@ -389,6 +418,24 @@
         _pageControl.center = center;
     }
     return _pageControl;
+}
+
+- (NSString *)version {
+    return @"1.1.0";
+}
+
+#pragma mark - Setter
+- (void)setCustomPageControl:(UIView<CWCarouselPageControlProtocol> *)customPageControl {
+    _customPageControl = customPageControl;
+    if(_customPageControl && _customPageControl.superview == nil)
+    {
+        [self addSubview:_customPageControl];
+        [self bringSubviewToFront:_customPageControl];
+        if(self.pageControl.superview == _customPageControl.superview)
+        {
+            [self.pageControl removeFromSuperview];
+        }
+    }
 }
 @end
 

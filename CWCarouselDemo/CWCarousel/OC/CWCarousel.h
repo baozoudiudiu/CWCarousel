@@ -12,6 +12,12 @@
 
 @interface CWCarousel : UIView
 #pragma mark - < 相关属性 >
+
+/**
+ 控件版本号
+ */
+@property (nonatomic, readonly, copy) NSString                  *version;
+
 /**
  相关代理
  */
@@ -31,7 +37,7 @@
  */
 @property (nonatomic, assign, readonly) CWCarouselStyle   style;
 /**
- style = CWCarouselStyle_H_3时的扩展高度
+ style = CWCarouselStyle_H_3时的扩展高度 (1.1.0版本后该属性废弃,请不要使用了)
  */
 @property (nonatomic, assign, readonly) CGFloat           addHeight;
 /**

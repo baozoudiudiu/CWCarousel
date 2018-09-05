@@ -45,6 +45,8 @@ typedef NS_ENUM(NSUInteger, CWCarouselStyle) {
  * style = CWCarouselStyle_H_3 有效
  * 中间一张图放大比例
  * 默认: 1.2
+ * 1.1.0版本后,无论设置多少,中间一张的cell的比例始终是原始size, 这个比例是相对两边cell的size的相对比例
+    也就是说,该值越大,那么两边的cell就会相对越小.反之越大.
  */
 @property (nonatomic, assign) CGFloat maxScale;
 

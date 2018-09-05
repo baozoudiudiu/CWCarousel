@@ -46,23 +46,47 @@
     
     self.animationView.backgroundColor = [UIColor whiteColor];
     CWFlowLayout *flowLayout = [[CWFlowLayout alloc] initWithStyle:[self styleFromTag:tag]];
-    CWCarousel *carousel = [[CWCarousel alloc] initWithFrame:self.animationView.bounds
+    
+//    /*
+//     使用frame创建视图
+//     */
+//    CWCarousel *carousel = [[CWCarousel alloc] initWithFrame:self.animationView.bounds
+//                                                    delegate:self
+//                                                  datasource:self
+//                                                  flowLayout:flowLayout];
+//    [self.animationView addSubview:carousel];
+    
+    // 使用layout创建视图(使用masonry 或者 系统api)
+    CWCarousel *carousel = [[CWCarousel alloc] initWithFrame:CGRectZero
                                                     delegate:self
                                                   datasource:self
                                                   flowLayout:flowLayout];
+    carousel.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.animationView addSubview:carousel];
+    NSDictionary *dic = @{@"view" : carousel};
+    [self.animationView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[view]-0-|"
+                                                                               options:kNilOptions
+                                                                               metrics:nil
+                                                                                 views:dic]];
+    [self.animationView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[view]-0-|"
+                                                                               options:kNilOptions
+                                                                               metrics:nil
+                                                                                 views:dic]];
+    
+    
     carousel.isAuto = YES;
     carousel.backgroundColor = [UIColor whiteColor];
     
     /* 自定pageControl */
+    
+    CGRect frame = self.animationView.bounds;
     if(self.openCustomPageControl) {
         CWPageControl *control = [[CWPageControl alloc] initWithFrame:CGRectMake(0, 0, 300, 20)];
-        control.center = CGPointMake(CGRectGetWidth(carousel.frame) * 0.5, CGRectGetHeight(carousel.frame) - 10);
+        control.center = CGPointMake(CGRectGetWidth(frame) * 0.5, CGRectGetHeight(frame) - 10);
         control.pageNumbers = 5;
         control.currentPage = 0;
         carousel.customPageControl = control;
     }
-    
-    [self.animationView addSubview:carousel];
     [carousel registerViewClass:[UICollectionViewCell class] identifier:@"cellId"];
     [carousel freshCarousel];
     self.carousel = carousel;
