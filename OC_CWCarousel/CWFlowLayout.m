@@ -65,7 +65,7 @@
             CGFloat width = self.itemWidth == 0 ? self.defaultItemWidth : self.itemWidth;
             self.itemWidth = width;
             CGFloat height = CGRectGetHeight(self.collectionView.frame);
-            self.itemSize = CGSizeMake(width, height);
+            self.itemSize = CGSizeMake(width, self.style == CWCarouselStyle_H_3 ? height / self.maxScale : height);
             self.scrollDirection = UICollectionViewScrollDirectionHorizontal;
             self.factItemSpace = 0;
             if(width * (1 - self.minScale) * 0.5 < self.itemSpace_H) {

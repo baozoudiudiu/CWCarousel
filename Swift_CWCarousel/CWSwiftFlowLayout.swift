@@ -112,6 +112,8 @@ class CWSwiftFlowLayout: UICollectionViewFlowLayout {
      * style = preview_big 有效
      * 中间一张图放大比例
      * 默认: 1.2
+     1.1.0版本后,无论设置多少,中间一张的cell的比例始终是原始size, 这个比例是相对两边cell的size的相对比例
+     也就是说,该值越大,那么两边的cell就会相对越小.反之越大.
      */
     var maxScale: CGFloat = 1.2
 }
@@ -125,9 +127,9 @@ extension CWSwiftFlowLayout {
     /// - Parameter height: 轮播图的高度
     /// - Returns: 比实际轮播图要高出的高度
     func addHeight(_ height: CGFloat) -> CGFloat {
-        if self.style == .preview_big {
-            return (self.maxScale - 1.0) * height
-        }
+//        if self.style == .preview_big {
+//            return (self.maxScale - 1.0) * height
+//        }
         return 0
     }
     
@@ -194,7 +196,7 @@ extension CWSwiftFlowLayout {
         self.scrollDirection = .horizontal
         let height = self.collectionView!.frame.height - self.addHeight(self.collectionView!.frame.height)
         let width = self.collectionView!.frame.width * self.itemWidthScale
-        self.itemSize = CGSize.init(width: width, height: height)
+        self.itemSize = CGSize.init(width: width, height: height / self.maxScale)
         self.minimumLineSpacing = self.itemSpace;
         self.sectionInset = UIEdgeInsets.init(top: self.addHeight(self.collectionView!.frame.height) * 0.5, left: 0, bottom: 0, right: 0)
     }

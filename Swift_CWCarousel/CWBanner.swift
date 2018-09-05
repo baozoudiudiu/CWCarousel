@@ -53,8 +53,8 @@ class CWBanner: UIView {
     let flowLayout: CWSwiftFlowLayout
     /// collectionView
     lazy var banner: UICollectionView = {
-        let rect = self.bounds
-        let b = UICollectionView.init(frame: rect, collectionViewLayout: self.flowLayout)
+//        let rect = self.bounds
+        let b = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: self.flowLayout)
         b.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(b)
         self.sendSubview(toBack: b)
@@ -63,6 +63,15 @@ class CWBanner: UIView {
         b.showsHorizontalScrollIndicator = false
         b.decelerationRate = 0
         b.backgroundColor = self.backgroundColor
+        
+        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[view]-0-|",
+                                                           options: [],
+                                                           metrics: nil,
+                                                           views: ["view" : b]))
+        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[view]-0-|",
+                                                           options: [],
+                                                           metrics: nil,
+                                                           views: ["view" : b]))
         return b
     }()
     /// 外部代理委托
@@ -96,10 +105,31 @@ class CWBanner: UIView {
         pageControl.pageIndicatorTintColor = UIColor.white
         pageControl.isUserInteractionEnabled = false;
         pageControl.currentPageIndicatorTintColor = UIColor.black
+        pageControl.translatesAutoresizingMaskIntoConstraints = false;
         return pageControl
     }()
     /// 自定义的pageControl
-    var customPageControl: CWBannerPageControl?
+    var customPageControl: CWBannerPageControl? {
+        willSet
+        {
+            if let custom = newValue as? UIView
+            {
+                if custom.superview == nil
+                {
+                    self.addSubview(custom);
+                    self.bringSubview(toFront: custom);
+                    self.pageControl.removeFromSuperview();
+                }
+            }
+        }
+    }
+    
+    /// 控件版本号
+    var version: String {
+        get{
+            return "1.1.0";
+        }
+    }
     
 }
 
@@ -108,6 +138,7 @@ extension CWBanner {
     /// 刷新数据
     func freshBanner() {
         self.banner.reloadData()
+        self.banner.layoutIfNeeded()
         self.scrollToIndexPathNoAnimated(self.originIndexPath())
         if self.autoPlay {
             self.play()
@@ -268,6 +299,14 @@ extension CWBanner {
     fileprivate func configureBanner() {
         if self.customPageControl == nil {
             self.addSubview(self.pageControl)
+            self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[control]-0-|",
+                                                               options: [],
+                                                               metrics: nil,
+                                                               views: ["control" : self.pageControl]))
+            self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[control(30)]-0-|",
+                                                               options: [],
+                                                               metrics: nil,
+                                                               views: ["control" : self.pageControl]))
         }else {
             self.addSubview(self.customPageControl as! UIView)
         }
