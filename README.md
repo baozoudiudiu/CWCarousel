@@ -5,6 +5,20 @@
 #### 代码示例为oc代码, 项目中已有swift版本,请自行下载
 #### oc版本支持cocoaPods安装 pod search OC_CWCarousel
 
+#### OC版本记录
+
+| 版本号 | 更新内容 |
+| ------ | ------ |
+| 1.1.0 | 修复了之前的一些bug |
+| 1.1.1 | 添加了无限轮播功能开关 endless |
+
+#### swift版本记录
+
+| 版本号 | 更新内容 |
+| ------ | ------ |
+| 1.1.0 | 功能同OC版 1.1.0 |
+
+
 <!--![example.gif](https://github.com/baozoudiudiu/CWCarousel/blob/master/CWCarousel/Sources/example.gif)-->
 ![example.gif](https://upload-images.jianshu.io/upload_images/3096223-64b23965562677f7.gif?imageMogr2/auto-orient/strip)
 
