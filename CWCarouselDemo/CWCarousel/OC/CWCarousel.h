@@ -18,40 +18,55 @@
  */
 @property (nonatomic, readonly, copy) NSString                  *version;
 
+
 /**
  相关代理
  */
 @property (nonatomic, assign) id <CWCarouselDelegate> _Nullable delegate;
+
+
 /**
  相关数据源
  */
 @property (nonatomic, assign) id <CWCarouselDatasource> _Nullable datasource;
+
 
 /**
  布局自定义layout
  */
 @property (nonatomic, strong, readonly) CWFlowLayout    * _Nonnull flowLayout;
 
+
 /**
  样式风格
  */
 @property (nonatomic, assign, readonly) CWCarouselStyle   style;
+
+
 /**
  style = CWCarouselStyle_H_3时的扩展高度 (1.1.0版本后该属性废弃,请不要使用了)
  */
 @property (nonatomic, assign, readonly) CGFloat           addHeight;
+
+
 /**
  实际的示轮播图内容的视图(其实就是基于collectionView实现的)
  */
 @property (nonatomic, strong, readonly) UICollectionView  * _Nonnull carouselView;
+
+
 /**
  是否自动轮播, 默认为NO
  */
 @property (nonatomic, assign) BOOL                        isAuto;
+
+
 /**
  自动轮播时间间隔, 默认 3s
  */
 @property (nonatomic, assign) NSTimeInterval              autoTimInterval;
+
+
 /**
  默认的pageControl
  1. 默认在水平居中正下方
@@ -59,11 +74,20 @@
  3. 如果不想将其添加在carousel上,请自行通过调用目标父视图的addSubview方法添加到其他父视图上
  */
 @property (nonatomic, strong) UIPageControl               *pageControl;
+
+
 /**
  自定义的pageControl
  */
 @property (nonatomic, strong) UIView<CWCarouselPageControlProtocol> *customPageControl;
 
+
+/**
+ 是否开始无限轮播
+ YES: 可以无限衔接
+ NO: 滑动到第一张或者最后一张就不能滑动了
+ */
+@property (nonatomic, assign) BOOL                        endless;
 #pragma mark - < 相关方法 >
 /**
  创建实例构造方法

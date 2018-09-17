@@ -75,6 +75,8 @@
     
     
     carousel.isAuto = YES;
+    carousel.autoTimInterval = 2;
+    carousel.endless = NO;
     carousel.backgroundColor = [UIColor whiteColor];
     
     /* 自定pageControl */
@@ -176,7 +178,7 @@
 }
 
 - (void)CWCarousel:(CWCarousel *)carousel didSelectedAtIndex:(NSInteger)index {
-    NSLog(@"...%ld...", index);
+    NSLog(@"...%ld...", (long)index);
 }
 
 - (UIView *)animationView{
