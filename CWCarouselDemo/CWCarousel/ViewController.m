@@ -76,7 +76,7 @@
     
     carousel.isAuto = YES;
     carousel.autoTimInterval = 2;
-    carousel.endless = NO;
+//    carousel.endless = NO;
     carousel.backgroundColor = [UIColor whiteColor];
     
     /* 自定pageControl */
