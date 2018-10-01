@@ -74,7 +74,7 @@
                                                                                  views:dic]];
     
     
-    carousel.isAuto = YES;
+    carousel.isAuto = NO;
     carousel.autoTimInterval = 2;
     carousel.endless = NO;
     carousel.backgroundColor = [UIColor whiteColor];
@@ -168,6 +168,8 @@
         cell.layer.masksToBounds = YES;
         cell.layer.cornerRadius = 8;
     }
+//    https://www.google.com/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwio8MyTp-DdAhWKM94KHUmEDcAQjRx6BAgBEAU&url=http%3A%2F%2F699pic.com%2Ftupian%2Fchuan.html&psig=AOvVaw20gpsPpW4JcNm0mJi9dYrb&ust=1538313533814128
+    
     NSString *name = [NSString stringWithFormat:@"%02ld.jpg", index + 1];
     UIImage *img = [UIImage imageNamed:name];
     if(!img) {
