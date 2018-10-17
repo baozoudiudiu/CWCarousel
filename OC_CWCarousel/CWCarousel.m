@@ -165,11 +165,11 @@
             maxIndex = [self infactNumbers] - 2;
             minIndex = 1;
         }
-        if (velocity.x > 0 && self.currentIndexPath.row == maxIndex)
+        if (velocity.x >= 0 && self.currentIndexPath.row == maxIndex)
         {
             return;
         }
-        if (velocity.x < 0 && self.currentIndexPath.row == minIndex)
+        if (velocity.x <= 0 && self.currentIndexPath.row == minIndex)
         {
             return;
         }
@@ -193,6 +193,17 @@
        self.currentIndexPath.row < [self infactNumbers] &&
        self.currentIndexPath.row >= 0) {
         // 中间一张轮播,居中显示
+        if (!self.endless)
+        {
+            if (self.currentIndexPath.row == 0 && self.style != CWCarouselStyle_Normal)
+            {
+                self.currentIndexPath = [NSIndexPath indexPathForRow:1 inSection:self.currentIndexPath.section];
+            }
+            else if (self.currentIndexPath.row == [self infactNumbers] - 1 && self.style != CWCarouselStyle_Normal)
+            {
+                self.currentIndexPath = [NSIndexPath indexPathForRow:[self infactNumbers] - 2 inSection:self.currentIndexPath.section];
+            }
+        }
         [self.carouselView scrollToItemAtIndexPath:self.currentIndexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
     }
 }
@@ -416,6 +427,7 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    [self adjustErrorCell:YES];
     if(self.delegate &&
        [self.delegate respondsToSelector:@selector(CWCarousel:didSelectedAtIndex:)]) {
         [self.delegate CWCarousel:self didSelectedAtIndex:[self caculateIndex:indexPath.row]];
@@ -470,6 +482,15 @@
                                                                        views:views]];
     }
     return _carouselView;
+}
+
+
+- (CWCarouselStyle)style {
+    if(self.flowLayout)
+    {
+        return self.flowLayout.style;
+    }
+    return CWCarouselStyle_Unknow;
 }
 
 
