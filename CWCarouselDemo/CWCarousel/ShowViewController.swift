@@ -50,8 +50,8 @@ class ShowViewController: UIViewController {
     
     let imgNames = ["01.jpg",
                     "02.jpg",
-//                    "03.jpg",
-//                    "04.jpg",
+                    "03.jpg",
+                    "04.jpg",
                     "05.jpg"]
     
     lazy var bannerView: CWBanner = {
@@ -63,6 +63,7 @@ class ShowViewController: UIViewController {
         banner.banner.register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellReuseId)
         
         banner.autoPlay = true
+        banner.endless = true
         banner.timeInterval = 2
         
         return banner
