@@ -11,12 +11,14 @@
 | ------ | ------ |
 | 1.1.0 | 修复了之前的一些bug |
 | 1.1.1 | 添加了无限轮播功能开关 endless |
+| 1.1.2 | 控件优化 |
 
 > #### swift版本记录
 
 | 版本号 | 更新内容 |
 | ------ | ------ |
 | 1.1.0 | 功能同OC版 1.1.0 |
+| 1.1.1 | 添加了无限轮播功能开关 endless |
 
 
 <!--![example.gif](https://github.com/baozoudiudiu/CWCarousel/blob/master/CWCarousel/Sources/example.gif)-->
