@@ -8,6 +8,14 @@
 
 #import "CWCarousel.h"
 
+@interface CWTempleteCell: UICollectionViewCell
+@end
+
+@implementation CWTempleteCell
+@end
+
+
+
 @interface CWCarousel ()<UICollectionViewDelegate, UICollectionViewDataSource> {
     
 }
@@ -47,6 +55,7 @@
         self.datasource = datasource;
         self.isAuto = NO;
         self.autoTimInterval = 3;
+        self.endless = YES;
         [self configureView];
     }
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appBecomeInactive:) name:UIApplicationWillResignActiveNotification object:nil];
@@ -115,7 +124,21 @@
     }
     [self.carouselView reloadData];
     [self.carouselView layoutIfNeeded];
-    [self.carouselView scrollToItemAtIndexPath:[self originIndexPath] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
+    if (self.endless)
+        [self.carouselView scrollToItemAtIndexPath:[self originIndexPath] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
+    else
+    {
+        if(self.flowLayout.style == CWCarouselStyle_Normal)
+        {
+            [self.carouselView scrollToItemAtIndexPath:self.currentIndexPath = [NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
+        }
+        else
+        {
+            [self.carouselView scrollToItemAtIndexPath:self.currentIndexPath = [NSIndexPath indexPathForRow:1 inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
+        }
+    }
+    
+    
     self.carouselView.userInteractionEnabled = YES;
     if (self.isAuto) {
         [self play];
@@ -133,6 +156,25 @@
 
 /// 将要结束拖拽
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
+    if (!self.endless)
+    {
+        NSInteger maxIndex = [self numbers] - 1;
+        NSInteger minIndex = 0;
+        if(self.flowLayout.style != CWCarouselStyle_Normal)
+        {
+            maxIndex = [self infactNumbers] - 2;
+            minIndex = 1;
+        }
+        if (velocity.x >= 0 && self.currentIndexPath.row == maxIndex)
+        {
+            return;
+        }
+        if (velocity.x <= 0 && self.currentIndexPath.row == minIndex)
+        {
+            return;
+        }
+    }
+    
     if(velocity.x > 0) {
         //左滑,下一张
         self.currentIndexPath = [NSIndexPath indexPathForRow:self.currentIndexPath.row + 1 inSection:self.currentIndexPath.section];
@@ -151,6 +193,17 @@
        self.currentIndexPath.row < [self infactNumbers] &&
        self.currentIndexPath.row >= 0) {
         // 中间一张轮播,居中显示
+        if (!self.endless)
+        {
+            if (self.currentIndexPath.row == 0 && self.style != CWCarouselStyle_Normal)
+            {
+                self.currentIndexPath = [NSIndexPath indexPathForRow:1 inSection:self.currentIndexPath.section];
+            }
+            else if (self.currentIndexPath.row == [self infactNumbers] - 1 && self.style != CWCarouselStyle_Normal)
+            {
+                self.currentIndexPath = [NSIndexPath indexPathForRow:[self infactNumbers] - 2 inSection:self.currentIndexPath.section];
+            }
+        }
         [self.carouselView scrollToItemAtIndexPath:self.currentIndexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
     }
 }
@@ -173,7 +226,19 @@
     if(self.isAuto) {
         [self play];
     }
-    [self checkOutofBounds];
+    if (self.endless)
+        [self checkOutofBounds];
+    
+//    if(!self.endless)
+//    {
+//        CGFloat space = self.flowLayout.itemSpace_H + self.flowLayout.itemWidth * (1 - self.flowLayout.minScale) * 0.5;
+//        if(self.currentIndexPath.row == 0)
+//            self.carouselView.contentInset = UIEdgeInsetsMake(0, space, 0, 0);
+//        else if(self.currentIndexPath.row == [self numbers] - 1)
+//            self.carouselView.contentInset = UIEdgeInsetsMake(0, 0, 0, space);
+//        else
+//            self.carouselView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
+//    }
 }
 
 // 滚动中
@@ -245,6 +310,10 @@
         return 0;
     }
     NSInteger row = factIndex % [self numbers];
+    if(!self.endless && self.flowLayout.style != CWCarouselStyle_Normal)
+    {
+        row = factIndex % [self infactNumbers] - 1;
+    }
     return row;
 }
 
@@ -257,9 +326,14 @@
     }];
     CGFloat centerX = self.carouselView.contentOffset.x + CGRectGetWidth(self.carouselView.frame) * 0.5;
     __block CGFloat minSpace = MAXFLOAT;
+    BOOL shouldSet = YES;
+    if (self.flowLayout.style != CWCarouselStyle_Normal && indexPaths.count <= 2)
+    {
+        shouldSet = NO;
+    }
     [attriArr enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         obj.zIndex = 0;
-        if(ABS(minSpace) > ABS(obj.center.x - centerX)) {
+        if(ABS(minSpace) > ABS(obj.center.x - centerX) && shouldSet) {
             minSpace = obj.center.x - centerX;
             self.currentIndexPath = obj.indexPath;
         }
@@ -281,8 +355,20 @@
     if([self numbers] <= 0) {
         return;
     }
-    if(self.currentIndexPath.row < [self infactNumbers] - 1) {
+    NSInteger maxIndex = 1;
+    if(!self.endless && self.flowLayout.style != CWCarouselStyle_Normal)
+    {
+        maxIndex = 2;
+    }
+    if(self.currentIndexPath.row < [self infactNumbers] - maxIndex)
+    {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.currentIndexPath.row + 1 inSection:self.currentIndexPath.section];
+        [self.carouselView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
+        self.currentIndexPath = indexPath;
+    }
+    else if(!self.endless)
+    {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:maxIndex - 1 inSection:self.currentIndexPath.section];
         [self.carouselView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
         self.currentIndexPath = indexPath;
     }
@@ -318,12 +404,24 @@
 
 #pragma mark - < Delegate, Datasource >
 - (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
-    if(self.datasource &&
-       [self.datasource respondsToSelector:@selector(viewForCarousel:indexPath:index:)]) {
-        UICollectionViewCell *cell = [self.datasource viewForCarousel:self indexPath:indexPath index:[self caculateIndex:indexPath.row]];
+    if(!self.endless
+       && self.flowLayout.style != CWCarouselStyle_Normal
+       && (indexPath.row == 0 || indexPath.row == [self infactNumbers] - 1))
+    {
+        UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"tempCell" forIndexPath:indexPath];
+        cell.contentView.backgroundColor = [UIColor clearColor];
         return cell;
     }
-    return nil;
+    else
+    {
+        if(self.datasource &&
+           [self.datasource respondsToSelector:@selector(viewForCarousel:indexPath:index:)])
+        {
+            UICollectionViewCell *cell = [self.datasource viewForCarousel:self indexPath:indexPath index:[self caculateIndex:indexPath.row]];
+            return cell;
+        }
+        return nil;
+    }
 }
 
 - (NSInteger)collectionView:(nonnull UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
@@ -334,6 +432,7 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    [self adjustErrorCell:YES];
     if(self.delegate &&
        [self.delegate respondsToSelector:@selector(CWCarousel:didSelectedAtIndex:)]) {
         [self.delegate CWCarousel:self didSelectedAtIndex:[self caculateIndex:indexPath.row]];
@@ -353,6 +452,13 @@
         self.customPageControl.currentPage = [self caculateIndex:currentIndexPath.row];
 }
 
+- (void)setEndless:(BOOL)endless {
+    if(_endless != endless)
+    {
+        _endless = endless;
+    }
+}
+
 #pragma mark - < getter >
 - (UICollectionView *)carouselView {
     if(!_carouselView) {
@@ -362,6 +468,7 @@
         _carouselView.delegate = self;
         _carouselView.dataSource = self;
         _carouselView.translatesAutoresizingMaskIntoConstraints = NO;
+        [_carouselView registerClass:[CWTempleteCell class] forCellWithReuseIdentifier:@"tempCell"];
         [self addSubview:_carouselView];
         
         NSDictionary *views = @{@"view" : self.carouselView};
@@ -380,6 +487,15 @@
                                                                        views:views]];
     }
     return _carouselView;
+}
+
+
+- (CWCarouselStyle)style {
+    if(self.flowLayout)
+    {
+        return self.flowLayout.style;
+    }
+    return CWCarouselStyle_Unknow;
 }
 
 
@@ -403,7 +519,22 @@
  @return 轮播图实际加载视图个数
  */
 - (NSInteger)infactNumbers {
-    return 300;
+    if (self.endless)
+    {
+        return 300;
+    }
+    else
+    {
+        if(self.flowLayout.style == CWCarouselStyle_Normal)
+        {
+            return [self numbers];
+        }
+        else
+        {
+            // 前后2个占位cell,所以+2
+            return [self numbers] + 2;
+        }
+    }
 }
 
 - (UIPageControl *)pageControl {
@@ -421,7 +552,7 @@
 }
 
 - (NSString *)version {
-    return @"1.1.0";
+    return @"1.1.1";
 }
 
 #pragma mark - Setter
