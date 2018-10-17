@@ -214,7 +214,10 @@ extension CWBanner {
     /// - Parameter IndexPath: 代码层cell对应的下标
     /// - Returns: 业务层对应的下标
     fileprivate func caculateIndex(indexPath: IndexPath) -> Int {
-        assert(self.numbers > 0, "error")
+        guard self.numbers > 0 else
+        {
+            return 0
+        }
         return indexPath.row % self.numbers
     }
     
