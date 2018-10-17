@@ -552,7 +552,7 @@
 }
 
 - (NSString *)version {
-    return @"1.1.1";
+    return @"1.1.2";
 }
 
 #pragma mark - Setter
