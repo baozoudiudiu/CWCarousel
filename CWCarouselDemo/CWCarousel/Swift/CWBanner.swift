@@ -304,9 +304,14 @@ extension CWBanner {
         }
         let centerX: CGFloat = self.banner.contentOffset.x + self.banner.frame.width * 0.5
         var minSpace = CGFloat(MAXFLOAT)
+        var shouldSet = true
+        if self.flowLayout.style != .normal && indexPaths.count <= 2
+        {
+            shouldSet = false
+        }
         for atr in attriArr
         {
-            if let obj = atr
+            if let obj = atr, shouldSet
             {
                 obj.zIndex = 0;
                 if(abs(minSpace) > abs(obj.center.x - centerX))

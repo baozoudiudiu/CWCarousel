@@ -326,9 +326,14 @@
     }];
     CGFloat centerX = self.carouselView.contentOffset.x + CGRectGetWidth(self.carouselView.frame) * 0.5;
     __block CGFloat minSpace = MAXFLOAT;
+    BOOL shouldSet = YES;
+    if (self.flowLayout.style != CWCarouselStyle_Normal && indexPaths.count <= 2)
+    {
+        shouldSet = NO;
+    }
     [attriArr enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         obj.zIndex = 0;
-        if(ABS(minSpace) > ABS(obj.center.x - centerX)) {
+        if(ABS(minSpace) > ABS(obj.center.x - centerX) && shouldSet) {
             minSpace = obj.center.x - centerX;
             self.currentIndexPath = obj.indexPath;
         }
