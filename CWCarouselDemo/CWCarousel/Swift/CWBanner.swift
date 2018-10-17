@@ -72,6 +72,7 @@ class CWBanner: UIView {
                                                            options: [],
                                                            metrics: nil,
                                                            views: ["view" : b]))
+        b.register(UICollectionViewCell.classForCoder(), forCellWithReuseIdentifier: "tempCell")
         return b
     }()
     /// 外部代理委托
@@ -127,10 +128,12 @@ class CWBanner: UIView {
     /// 控件版本号
     var version: String {
         get{
-            return "1.1.0";
+            return "1.1.1";
         }
     }
     
+    /// 是否无限轮播 true:无限衔接下去; false: 到最后一张后就没有了
+    var endless: Bool = true
 }
 
 // MARK: - OPEN METHOD
@@ -159,8 +162,24 @@ extension CWBanner {
     }
     
     @objc fileprivate func nextCell() {
-        // 这里不用考虑下标越界的问题,其他地方做了保护
-        self.currentIndexPath = self.currentIndexPath + 1;
+        if self.endless
+        {
+            // 这里不用考虑下标越界的问题,其他地方做了保护
+            self.currentIndexPath = self.currentIndexPath + 1;
+        }
+        else
+        {
+            let lastIndex = self.flowLayout.style == .normal ? self.numbers - 1 : self.factNumbers - 2
+            if self.currentIndexPath.row == lastIndex
+            {
+                let row = self.flowLayout.style == .normal ? 0 : 1
+                self.currentIndexPath = IndexPath.init(row: row, section: 0)
+            }
+            else
+            {
+                self.currentIndexPath = self.currentIndexPath + 1;
+            }
+        }
         self.scrollViewWillBeginDecelerating(self.banner)
     }
     
@@ -218,21 +237,36 @@ extension CWBanner {
         {
             return 0
         }
-        return indexPath.row % self.numbers
+        
+        var row = indexPath.row % self.numbers
+        if !self.endless && self.flowLayout.style != .normal
+        {
+            row = indexPath.row % self.factNumbers - 1
+        }
+        return row
     }
     
     /// 第一次加载时,会从中间开始展示
     ///
     /// - Returns: 返回对应的indexPath
     fileprivate func originIndexPath() -> IndexPath {
-        // 判断一共可以分成多少组
-        let centerIndex = self.factNumbers / self.numbers
-        if centerIndex <= 1 {
-            // 小于或者只有一组
-            self.currentIndexPath = IndexPath.init(row: self.numbers, section: 0)
-        }else {
-            // 取最中间的一组开始展示
-            self.currentIndexPath = IndexPath.init(row: centerIndex / 2 * self.numbers, section: 0)
+        if endless
+        {
+            // 判断一共可以分成多少组
+            let centerIndex = self.factNumbers / self.numbers
+            if centerIndex <= 1 {
+                // 小于或者只有一组
+                self.currentIndexPath = IndexPath.init(row: self.numbers, section: 0)
+            }else {
+                // 取最中间的一组开始展示
+                self.currentIndexPath = IndexPath.init(row: centerIndex / 2 * self.numbers, section: 0)
+            }
+            
+        }
+        else
+        {
+            let row = self.flowLayout.style == .normal ? 0 : 1
+            self.currentIndexPath = IndexPath.init(row: row, section: 0)
         }
         return self.currentIndexPath
     }
@@ -270,9 +304,14 @@ extension CWBanner {
         }
         let centerX: CGFloat = self.banner.contentOffset.x + self.banner.frame.width * 0.5
         var minSpace = CGFloat(MAXFLOAT)
+        var shouldSet = true
+        if self.flowLayout.style != .normal && indexPaths.count <= 2
+        {
+            shouldSet = false
+        }
         for atr in attriArr
         {
-            if let obj = atr
+            if let obj = atr, shouldSet
             {
                 obj.zIndex = 0;
                 if(abs(minSpace) > abs(obj.center.x - centerX))
@@ -337,6 +376,28 @@ extension CWBanner {
     
     /// 将要结束拖拽
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        
+        if (!self.endless)
+        {
+            var maxIndex = self.numbers - 1
+            var minIndex = 0
+            if self.flowLayout.style != .normal
+            {
+                maxIndex = self.factNumbers - 2
+                minIndex = 1
+            }
+            
+            if velocity.x >= 0 && self.currentIndexPath.row == maxIndex
+            {
+                return
+            }
+            
+            if velocity.x <= 0 && self.currentIndexPath.row == minIndex
+            {
+                return
+            }
+        }
+        
         // 这里不用考虑越界问题,其他地方做了保护
         if velocity.x > 0 {
             //左滑,下一张
@@ -351,11 +412,25 @@ extension CWBanner {
     
     /// 将要开始减速
     func scrollViewWillBeginDecelerating(_ scrollView: UIScrollView) {
+        
         guard self.currentIndexPath.row >= 0,
             self.currentIndexPath.row < self.factNumbers else {
             // 越界保护
             return
         }
+        
+        if !self.endless
+        {
+            if self.currentIndexPath.row == 0 && self.flowLayout.style != .normal
+            {
+                self.currentIndexPath = IndexPath.init(row: 1, section: 0)
+            }
+            else if self.currentIndexPath.row == self.factNumbers - 1 && self.flowLayout.style != .normal
+            {
+                self.currentIndexPath = IndexPath.init(row: self.factNumbers - 2, section: 0)
+            }
+        }
+        
         // 在这里将需要显示的cell置为居中
         self.scrollToIndexPathAnimated(self.currentIndexPath)
     }
@@ -369,7 +444,11 @@ extension CWBanner {
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
         self.banner.isPagingEnabled = false
         // 边缘检测,是否滑到了最边缘
-        self.checkOutOfBounds()
+        if self.endless
+        {
+            self.checkOutOfBounds()
+        }
+       
         if self.autoPlay {
             self.resumePlay()
         }
@@ -387,6 +466,12 @@ extension CWBanner {
  // MARK: - UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout
 extension CWBanner: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if !self.endless
+            && self.flowLayout.style != .normal
+            && (indexPath.row == 0 || indexPath.row == self.factNumbers - 1)
+        {
+            return collectionView.dequeueReusableCell(withReuseIdentifier: "tempCell", for: indexPath)
+        }
         return self.delegate?.bannerView(banner: self,
                                          index: self.caculateIndex(indexPath: indexPath),
                                          indexPath: indexPath) ?? UICollectionViewCell()
@@ -397,6 +482,7 @@ extension CWBanner: UICollectionViewDelegate, UICollectionViewDataSource, UIColl
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        self.adjustErrorCell(isScroll: true)
         self.delegate?.didSelected(banner: self,
                                    index: self.caculateIndex(indexPath: indexPath),
                                    indexPath: indexPath)
@@ -407,7 +493,21 @@ extension CWBanner: UICollectionViewDelegate, UICollectionViewDataSource, UIColl
 extension CWBanner {
     /// 背地里实际返回的cell个数
     fileprivate var factNumbers: Int {
-        return 100
+        guard self.numbers > 0 else
+        {
+            return 0;
+        }
+        
+        if endless
+        {
+            return 100
+        }
+        else if self.flowLayout.style != .normal
+        {
+            return self.numbers + 2
+        }
+        
+        return self.numbers
     }
     
     /// 业务层实际需要展示的cell个数
