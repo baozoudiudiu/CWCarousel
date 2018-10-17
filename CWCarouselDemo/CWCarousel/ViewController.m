@@ -74,9 +74,9 @@
                                                                                  views:dic]];
     
     
-    carousel.isAuto = NO;
+    carousel.isAuto = YES;
     carousel.autoTimInterval = 2;
-    carousel.endless = NO;
+    carousel.endless = YES;
     carousel.backgroundColor = [UIColor whiteColor];
     
     /* 自定pageControl */
