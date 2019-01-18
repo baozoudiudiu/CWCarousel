@@ -15,6 +15,7 @@ class SViewController : UIViewController {
     
     private func configureUI () {
         self.view.backgroundColor = UIColor.white
+        self.automaticallyAdjustsScrollViewInsets = false;
         self.listView.tableFooterView = UIView.init()
     }
     

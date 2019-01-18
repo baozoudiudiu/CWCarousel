@@ -117,5 +117,6 @@ extension ShowViewController {
         self.view.backgroundColor = UIColor.white
         self.navigationItem.title = "show"
         self.bannerView.freshBanner()
+        self.automaticallyAdjustsScrollViewInsets = false
     }
 }
