@@ -96,7 +96,7 @@
         __block UICollectionViewLayoutAttributes *attri = nil;
         [arr enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             CGFloat space = ABS(obj.center.x - centerX);
-            if(space > 0) {
+            if(space >= 0) {
                 CGFloat scale = 1;
                 if (self.style == CWCarouselStyle_H_2) {
                     scale = (self.minScale - 1) / (self.itemWidth + self.factItemSpace) * space + 1;

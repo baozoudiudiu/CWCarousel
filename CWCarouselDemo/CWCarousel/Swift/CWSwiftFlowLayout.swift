@@ -147,7 +147,7 @@ extension CWSwiftFlowLayout {
         var attri: UICollectionViewLayoutAttributes? = nil
         arr?.forEach({ (element) in
             let space = CGFloat(abs(element.center.x - centerX))
-            if space > 0 {
+            if space >= 0 {
                 var scale: CGFloat = 1.0
                 scale = block(width, space)
                 element.transform = CGAffineTransform.init(scaleX: scale, y: scale)
