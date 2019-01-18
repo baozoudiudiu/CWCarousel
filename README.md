@@ -13,6 +13,7 @@
 | 1.1.1 | 添加了无限轮播功能开关 endless |
 | 1.1.2 | 控件优化 |
 | 1.1.3 | 提升了一个版本号 |
+| 1.1.4 | 修复样式3在320尺寸屏幕上可能出现的问题 |
 
 > #### swift版本记录
 
@@ -20,6 +21,7 @@
 | ------ | ------ |
 | 1.1.0 | 功能同OC版 1.1.0 |
 | 1.1.1 | 添加了无限轮播功能开关 endless |
+| 1.1.2 | 修复样式3在320尺寸屏幕上可能出现的问题 |
 
 
 <!--![example.gif](https://github.com/baozoudiudiu/CWCarousel/blob/master/CWCarousel/Sources/example.gif)-->
