@@ -124,7 +124,7 @@
             [self.view addSubview:button];
             [button setTitle:titles[index] forState:UIControlStateNormal];
             button.tag = index;
-            button.frame = CGRectMake(0, height * index + 60, CGRectGetWidth(self.view.frame), height);
+            button.frame = CGRectMake(0, height * index + [UIApplication sharedApplication].statusBarFrame.size.height + self.navigationController.navigationBar.frame.size.height + 10, CGRectGetWidth(self.view.frame), height);
             [button addTarget:self action:@selector(buttonClick:) forControlEvents:UIControlEventTouchUpInside];
         });
     });
@@ -183,9 +183,19 @@
     NSLog(@"...%ld...", (long)index);
 }
 
+
+- (void)CWCarousel:(CWCarousel *)carousel didStartScrollAtIndex:(NSInteger)index indexPathRow:(NSInteger)indexPathRow {
+    NSLog(@"开始滑动: %ld", index);
+}
+
+
+- (void)CWCarousel:(CWCarousel *)carousel didEndScrollAtIndex:(NSInteger)index indexPathRow:(NSInteger)indexPathRow {
+    NSLog(@"结束滑动: %ld", index);
+}
+
 - (UIView *)animationView{
     if(!_animationView) {
-        self.animationView = [[UIView alloc] initWithFrame:CGRectMake(0, 240, CGRectGetWidth(self.view.frame), 230)];
+        self.animationView = [[UIView alloc] initWithFrame:CGRectMake(0, 260, CGRectGetWidth(self.view.frame), 230)];
     }
     return _animationView;
 }

@@ -18,6 +18,27 @@
  @param index 被点击的下标
  */
 - (void)CWCarousel:(CWCarousel *)carousel didSelectedAtIndex:(NSInteger)index;
+
+@optional
+
+/**
+将要开始滑动时,会触发该代理
+
+ @param carousel 轮播图控件
+ @param index 开始滑动时,处于中心点图片的下标
+ @param indexPathRow 开始滑动时,处于中心点图片的在控件内部的实际下标
+ */
+- (void)CWCarousel:(CWCarousel *)carousel didStartScrollAtIndex:(NSInteger)index indexPathRow:(NSInteger)indexPathRow;
+
+
+/**
+ 滑动结束后,会触发该代理
+
+ @param carousel 轮播图控件
+ @param index 结束滑动时,处于中心点图片的下标
+ @param indexPathRow 结束滑动时,处于中心点图片在控件内部的实际下标
+ */
+- (void)CWCarousel:(CWCarousel *)carousel didEndScrollAtIndex:(NSInteger)index indexPathRow:(NSInteger)indexPathRow;
 @end
 
 @protocol CWCarouselDatasource<NSObject>

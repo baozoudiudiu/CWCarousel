@@ -152,6 +152,9 @@
     if (self.isAuto) {
         [self stop];
     }
+    if (self.delegate && [self.delegate respondsToSelector:@selector(CWCarousel:didStartScrollAtIndex:indexPathRow:)]) {
+        [self.delegate CWCarousel:self didStartScrollAtIndex:[self caculateIndex:self.currentIndexPath.row] indexPathRow:self.currentIndexPath.row];
+    }
 }
 
 /// 将要结束拖拽
@@ -239,6 +242,10 @@
 //        else
 //            self.carouselView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
 //    }
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(CWCarousel:didEndScrollAtIndex:indexPathRow:)]) {
+        [self.delegate CWCarousel:self didEndScrollAtIndex:[self caculateIndex:self.currentIndexPath.row] indexPathRow:self.currentIndexPath.row];
+    }
 }
 
 // 滚动中
@@ -432,11 +439,13 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    [self adjustErrorCell:YES];
     if(self.delegate &&
        [self.delegate respondsToSelector:@selector(CWCarousel:didSelectedAtIndex:)]) {
         [self.delegate CWCarousel:self didSelectedAtIndex:[self caculateIndex:indexPath.row]];
     }
+    // 处于动画中时,点击cell,可能会出现cell不居中问题.这里处理下
+    // 将里中心点最近的那个cell居中
+    [self adjustErrorCell:YES];
 }
 
 #pragma mark - <setter>
@@ -552,7 +561,7 @@
 }
 
 - (NSString *)version {
-    return @"1.1.4";
+    return @"1.1.5";
 }
 
 #pragma mark - Setter

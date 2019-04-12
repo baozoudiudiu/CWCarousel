@@ -57,11 +57,11 @@ class CWBanner: UIView {
         let b = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: self.flowLayout)
         b.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(b)
-        self.sendSubview(toBack: b)
+        self.sendSubviewToBack(b)
         b.delegate = self
         b.dataSource = self
         b.showsHorizontalScrollIndicator = false
-        b.decelerationRate = 0
+        b.decelerationRate = UIScrollView.DecelerationRate(rawValue: 0)
         b.backgroundColor = self.backgroundColor
         
         self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[view]-0-|",
@@ -113,12 +113,12 @@ class CWBanner: UIView {
     var customPageControl: CWBannerPageControl? {
         willSet
         {
-            if let custom = newValue as? UIView
+            if let custom = newValue
             {
                 if custom.superview == nil
                 {
                     self.addSubview(custom);
-                    self.bringSubview(toFront: custom);
+                    self.bringSubviewToFront(custom);
                     self.pageControl.removeFromSuperview();
                 }
             }
@@ -128,7 +128,7 @@ class CWBanner: UIView {
     /// 控件版本号
     var version: String {
         get{
-            return "1.1.2";
+            return "1.1.3";
         }
     }
     
@@ -350,15 +350,15 @@ extension CWBanner {
                                                                metrics: nil,
                                                                views: ["control" : self.pageControl]))
         }else {
-            self.addSubview(self.customPageControl as! UIView)
+            self.addSubview(self.customPageControl!)
         }
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(appActive(_:)), name: NSNotification.Name.UIApplicationDidBecomeActive ,
+                                               selector: #selector(appActive(_:)), name: UIApplication.didBecomeActiveNotification ,
                                                object:nil)
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(appInactive(_:)),
-                                               name: NSNotification.Name.UIApplicationWillResignActive,
+                                               name: UIApplication.willResignActiveNotification,
                                                object: nil)
     }
 }
@@ -482,10 +482,12 @@ extension CWBanner: UICollectionViewDelegate, UICollectionViewDataSource, UIColl
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        self.adjustErrorCell(isScroll: true)
         self.delegate?.didSelected(banner: self,
                                    index: self.caculateIndex(indexPath: indexPath),
                                    indexPath: indexPath)
+        // 处于动画中时,点击cell,可能会出现cell不居中问题.这里处理下
+        // 将里中心点最近的那个cell居中
+        self.adjustErrorCell(isScroll: true)
     }
 }
 
