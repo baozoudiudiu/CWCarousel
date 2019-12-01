@@ -11,7 +11,7 @@
 #import "CWPageControl.h"
 
 #define kViewTag 666
-#define kCount 5
+#define kCount 0
 
 @interface ViewController ()<CWCarouselDatasource, CWCarouselDelegate>
 
@@ -151,11 +151,13 @@
     }
 }
 
+
+
+#pragma mark - Delegate
 - (NSInteger)numbersForCarousel {
     return kCount;
 }
 
-#pragma mark - Delegate
 - (UICollectionViewCell *)viewForCarousel:(CWCarousel *)carousel indexPath:(NSIndexPath *)indexPath index:(NSInteger)index{
     UICollectionViewCell *cell = [carousel.carouselView dequeueReusableCellWithReuseIdentifier:@"cellId" forIndexPath:indexPath];
     cell.contentView.backgroundColor = [UIColor cyanColor];

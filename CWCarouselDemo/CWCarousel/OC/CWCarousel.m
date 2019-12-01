@@ -415,6 +415,7 @@
        && self.flowLayout.style != CWCarouselStyle_Normal
        && (indexPath.row == 0 || indexPath.row == [self infactNumbers] - 1))
     {
+        // 添加占位cell
         UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"tempCell" forIndexPath:indexPath];
         cell.contentView.backgroundColor = [UIColor clearColor];
         return cell;
@@ -530,10 +531,12 @@
 - (NSInteger)infactNumbers {
     if (self.endless)
     {
+        // 如果是无限轮播,默认加载300个
         return 300;
     }
     else
     {
+        // 如果不是无限轮播,出了第一种样式,其他的样式要加2个占位空cell
         if(self.flowLayout.style == CWCarouselStyle_Normal)
         {
             return [self numbers];
