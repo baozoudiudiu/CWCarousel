@@ -19,6 +19,9 @@
 @property (nonatomic, strong) UIView *animationView;
 @property (nonatomic, assign) BOOL openCustomPageControl;
 @property (nonatomic, weak) IBOutlet UISwitch *cusSwitch;
+
+/// 数据源
+@property (nonatomic, strong) NSArray   *dataArr;
 @end
 
 @implementation ViewController
@@ -31,6 +34,7 @@
     [self.cusSwitch addTarget:self action:@selector(switchChanged:) forControlEvents:UIControlEventValueChanged];
 }
 - (void)configureUI:(NSInteger)tag {
+    self.dataArr = nil;
     CATransition *tr = [CATransition animation];
     tr.type = @"cube";
     tr.subtype = kCATransitionFromRight;
@@ -72,7 +76,7 @@
                                                                                options:kNilOptions
                                                                                metrics:nil
                                                                                  views:dic]];
-    
+    self.animationView.clipsToBounds = YES;
     
     carousel.isAuto = YES;
     carousel.autoTimInterval = 2;
@@ -90,8 +94,8 @@
         carousel.customPageControl = control;
     }
     [carousel registerViewClass:[UICollectionViewCell class] identifier:@"cellId"];
-    [carousel freshCarousel];
     self.carousel = carousel;
+    [self requestNetworkData];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -114,6 +118,10 @@
 }
 - (void)switchChanged:(UISwitch *)switchSender {
     self.openCustomPageControl = switchSender.on;
+    if (self.carousel)
+    {
+        [self configureUI:self.carousel.flowLayout.style - 1];
+    }
 }
 - (void)createButtons {
     NSArray *titles = @[@"正常样式", @"横向滑动两边留白", @"横向滑动两边留白渐变效果", @"两边被遮挡效果"];
@@ -151,11 +159,27 @@
     }
 }
 
-
+#pragma mark - 网络层
+- (void)requestNetworkData {
+    // 模拟网络请求
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        NSMutableArray *arr = [NSMutableArray array];
+        NSString *imgName = @"";
+        for (int i = 0; i < 5; i++) {
+            imgName = [NSString stringWithFormat:@"%02d.jpg", i + 1];
+            [arr addObject:imgName];
+        }
+        self.dataArr = arr;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.carousel freshCarousel];
+        });
+    });
+}
 
 #pragma mark - Delegate
 - (NSInteger)numbersForCarousel {
-    return kCount;
+//    return kCount;
+    return self.dataArr.count;
 }
 
 - (UICollectionViewCell *)viewForCarousel:(CWCarousel *)carousel indexPath:(NSIndexPath *)indexPath index:(NSInteger)index{
@@ -172,7 +196,8 @@
     }
 //    https://www.google.com/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwio8MyTp-DdAhWKM94KHUmEDcAQjRx6BAgBEAU&url=http%3A%2F%2F699pic.com%2Ftupian%2Fchuan.html&psig=AOvVaw20gpsPpW4JcNm0mJi9dYrb&ust=1538313533814128
     
-    NSString *name = [NSString stringWithFormat:@"%02ld.jpg", index + 1];
+//    NSString *name = [NSString stringWithFormat:@"%02ld.jpg", index + 1];
+    NSString *name = self.dataArr[index];
     UIImage *img = [UIImage imageNamed:name];
     if(!img) {
         NSLog(@"%@", name);
@@ -197,7 +222,7 @@
 
 - (UIView *)animationView{
     if(!_animationView) {
-        self.animationView = [[UIView alloc] initWithFrame:CGRectMake(0, 260, CGRectGetWidth(self.view.frame), 230)];
+        self.animationView = [[UIView alloc] initWithFrame:CGRectMake(0, 250, CGRectGetWidth(self.view.frame), 230)];
     }
     return _animationView;
 }
