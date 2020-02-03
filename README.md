@@ -2,6 +2,11 @@
 
 ## 基于collectionView实现的通用无限轮播图封装.
 
+> 1. issues里面的可以重现的问题已经修复.
+> 2. 部分不能重现的问题暂未处理.
+> 3. 请大家提issue尽量描述详细些,最好能提供代码或者截图.请附上是OC版本还是Swift版本的问题.
+> 4. 谢谢配合,大家一起进步.
+
 #### 代码示例为oc代码, 项目中已有swift版本,请自行下载
 #### oc版本支持cocoaPods安装 pod search OC_CWCarousel
 
