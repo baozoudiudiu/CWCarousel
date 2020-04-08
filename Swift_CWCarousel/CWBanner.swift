@@ -38,6 +38,14 @@ class CWBanner: UIView {
         self.configureBanner()
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        if self.autoPlay
+        {
+            self.resumePlay()
+        }
+    }
+    
     deinit {
         NSLog("[%@ -- %@]",NSStringFromClass(self.classForCoder), #function);
         NotificationCenter.default.removeObserver(self)
@@ -128,7 +136,7 @@ class CWBanner: UIView {
     /// 控件版本号
     var version: String {
         get{
-            return "1.1.3";
+            return "1.1.4";
         }
     }
     
