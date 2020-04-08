@@ -24,12 +24,12 @@
 > #### swift版本记录
 
 | 版本号 | 更新内容 |
-| ------ | ------ |
+| ------ | :----- |
 | 1.1.0 | 功能同OC版 1.1.0 |
 | 1.1.1 | 添加了无限轮播功能开关 endless |
 | 1.1.2 | 修复样式3在320尺寸屏幕上可能出现的问题 |
 | 1.1.3 | 适配swift5.0 |
-
+| 1.1.4 | 修复通过layout创建视图,偶现不自动轮播问题. |
 
 <!--![example.gif](https://github.com/baozoudiudiu/CWCarousel/blob/master/CWCarousel/Sources/example.gif)-->
 ![example.gif](https://upload-images.jianshu.io/upload_images/3096223-64b23965562677f7.gif?imageMogr2/auto-orient/strip)
@@ -138,5 +138,5 @@ CWCarousel *carousel = [[CWCarousel alloc] initWithFrame:self.animationView.boun
 - (void)controllerWillDisAppear;
 ```
 * 具体UI样式修改都有具体的属性,详情请查看对应类的.h文件即可. 
-
 * 如有问题和bug,欢迎指正.
+
