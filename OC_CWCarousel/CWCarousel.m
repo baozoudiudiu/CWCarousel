@@ -148,7 +148,7 @@
 /// 开始拖拽
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     // 防止拖动加速度太大,一次跳过多张图片,这里设置一下
-    scrollView.pagingEnabled = YES;
+//    scrollView.pagingEnabled = YES;
     if (self.isAuto) {
         [self stop];
     }
