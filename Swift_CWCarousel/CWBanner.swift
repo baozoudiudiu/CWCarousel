@@ -136,7 +136,7 @@ class CWBanner: UIView {
     /// 控件版本号
     var version: String {
         get{
-            return "1.1.4";
+            return "1.1.5";
         }
     }
     
@@ -375,7 +375,11 @@ extension CWBanner {
 extension CWBanner {
     /// 开始拖拽
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        self.banner.isPagingEnabled = true
+        if #available(iOS 14.0, *) {
+            self.banner.isPagingEnabled = false
+        } else {
+            self.banner.isPagingEnabled = true
+        }
         if self.autoPlay {
             self.pause()
         }

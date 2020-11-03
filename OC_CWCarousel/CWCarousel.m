@@ -148,7 +148,11 @@
 /// 开始拖拽
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     // 防止拖动加速度太大,一次跳过多张图片,这里设置一下
-    scrollView.pagingEnabled = YES;
+    if (@available(iOS 14.0, *)) {
+        scrollView.pagingEnabled = NO;
+    } else {
+        scrollView.pagingEnabled = YES;
+    }
     if (self.isAuto) {
         [self stop];
     }
@@ -415,6 +419,7 @@
        && self.flowLayout.style != CWCarouselStyle_Normal
        && (indexPath.row == 0 || indexPath.row == [self infactNumbers] - 1))
     {
+        // 添加占位cell
         UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"tempCell" forIndexPath:indexPath];
         cell.contentView.backgroundColor = [UIColor clearColor];
         return cell;
@@ -530,10 +535,12 @@
 - (NSInteger)infactNumbers {
     if (self.endless)
     {
+        // 如果是无限轮播,默认加载300个
         return 300;
     }
     else
     {
+        // 如果不是无限轮播,出了第一种样式,其他的样式要加2个占位空cell
         if(self.flowLayout.style == CWCarouselStyle_Normal)
         {
             return [self numbers];
@@ -561,7 +568,7 @@
 }
 
 - (NSString *)version {
-    return @"1.1.5";
+    return @"1.1.6";
 }
 
 #pragma mark - Setter
