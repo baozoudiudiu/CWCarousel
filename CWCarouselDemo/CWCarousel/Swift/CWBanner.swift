@@ -136,7 +136,7 @@ class CWBanner: UIView {
     /// 控件版本号
     var version: String {
         get{
-            return "1.1.4";
+            return "1.1.5";
         }
     }
     
