@@ -312,14 +312,14 @@ extension CWBanner {
         }
         let centerX: CGFloat = self.banner.contentOffset.x + self.banner.frame.width * 0.5
         var minSpace = CGFloat(MAXFLOAT)
-        var shouldSet = true
-        if self.flowLayout.style != .normal && indexPaths.count <= 2
-        {
-            shouldSet = false
-        }
+//        var shouldSet = true
+//        if self.flowLayout.style != .normal && indexPaths.count <= 2
+//        {
+//            shouldSet = false
+//        }
         for atr in attriArr
         {
-            if let obj = atr, shouldSet
+            if let obj = atr
             {
                 obj.zIndex = 0;
                 if(abs(minSpace) > abs(obj.center.x - centerX))
@@ -419,6 +419,9 @@ extension CWBanner {
             self.currentIndexPath = self.currentIndexPath - 1
         }else if velocity.x == 0 {
             self.adjustErrorCell(isScroll: false)
+            if #available(iOS 14.0, *) {
+                self.scrollViewWillBeginDecelerating(self.banner);
+            }
         }
     }
     

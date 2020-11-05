@@ -86,7 +86,7 @@
 }
 
 - (void)dealloc {
-    NSLog(@"%s", __func__);
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -191,11 +191,17 @@
     }else if (velocity.x == 0) {
         //还有一种情况,当滑动后手指按住不放,然后松开,此时的加速度其实是为0的
         [self adjustErrorCell:NO];
+        if (@available(iOS 14.0, *)) {
+            // iOS14以前,就算加速度为0,后续系统会还是会走scrollViewWillBeginDecelerating:回调
+            // 但是iOS14以后,加速度为0时,不会在后续执行回调.这里手动触发一下
+            [self scrollViewWillBeginDecelerating:self.carouselView];
+        }
     }
 }
 
 /// 开始减速
 - (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
+    
     if(self.currentIndexPath != nil &&
        self.currentIndexPath.row < [self infactNumbers] &&
        self.currentIndexPath.row >= 0) {
@@ -217,6 +223,7 @@
 
 /// 减速完成
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    
     // 打开交互
     scrollView.pagingEnabled = NO;
     if(self.isAuto) {
@@ -226,6 +233,7 @@
 
 /// 滚动动画完成
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+    
     // 滚动完成,打开交互,关掉pagingEnabled
     // 为什么要关掉pagingEnabled呢,因为切换控制器的时候会有系统级bug,不信你试试.
     scrollView.userInteractionEnabled = YES;
@@ -337,14 +345,18 @@
     }];
     CGFloat centerX = self.carouselView.contentOffset.x + CGRectGetWidth(self.carouselView.frame) * 0.5;
     __block CGFloat minSpace = MAXFLOAT;
-    BOOL shouldSet = YES;
-    if (self.flowLayout.style != CWCarouselStyle_Normal && indexPaths.count <= 2)
-    {
-        shouldSet = NO;
-    }
+//    BOOL shouldSet = YES;
+//    if (self.flowLayout.style != CWCarouselStyle_Normal && indexPaths.count <= 2)
+//    {
+//        shouldSet = NO;
+//    }
     [attriArr enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         obj.zIndex = 0;
-        if(ABS(minSpace) > ABS(obj.center.x - centerX) && shouldSet) {
+//        if(ABS(minSpace) > ABS(obj.center.x - centerX) && shouldSet) {
+//            minSpace = obj.center.x - centerX;
+//            self.currentIndexPath = obj.indexPath;
+//        }
+        if(ABS(minSpace) > ABS(obj.center.x - centerX)) {
             minSpace = obj.center.x - centerX;
             self.currentIndexPath = obj.indexPath;
         }
