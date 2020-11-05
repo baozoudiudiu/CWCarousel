@@ -23,7 +23,7 @@
 | 1.1.3 | 提升了一个版本号 |
 | 1.1.4 | 修复样式3在320尺寸屏幕上可能出现的问题 |
 | 1.1.5 | 1.新增了2个代理回调<br>2.点击事件代理回调逻辑优化 |
-| 1.1.6 | 适配iOS14 感谢[milletZZ](https://github.com/milletZZ) |
+| 1.1.7 | 适配iOS14 感谢[milletZZ](https://github.com/milletZZ) |
 
 #### swift版本记录
 | 版本号 | 更新内容 |
@@ -33,7 +33,7 @@
 | 1.1.2 | 修复样式3在320尺寸屏幕上可能出现的问题 |
 | 1.1.3 | 适配swift5.0 |
 | 1.1.4 | 修复通过layout创建视图,偶现不自动轮播问题. |
-| 1.1.5 | 适配iOS14 感谢[milletZZ](https://github.com/milletZZ) |
+| 1.1.7 | 适配iOS14 感谢[milletZZ](https://github.com/milletZZ) |
 
 <!--![example.gif](https://github.com/baozoudiudiu/CWCarousel/blob/master/CWCarousel/Sources/example.gif)-->
 ![example.gif](https://upload-images.jianshu.io/upload_images/3096223-64b23965562677f7.gif?imageMogr2/auto-orient/strip)
