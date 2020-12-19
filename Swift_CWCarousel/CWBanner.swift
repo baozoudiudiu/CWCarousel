@@ -8,11 +8,52 @@
 
 import UIKit
 
+class CWCollectionView: UICollectionView, UIGestureRecognizerDelegate {
+    
+    override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
+        super.init(frame: frame, collectionViewLayout: layout)
+        self.panGestureRecognizer.delegate = self
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
+}
+
 protocol CWBannerDelegate: AnyObject {
+    /// 视图数量
     func bannerNumbers() -> Int
+    
+    /// 加载cell
+    /// - Parameters:
+    ///   - banner: 控件对象
+    ///   - index: 当前需要加载index
+    ///   - indexPath: 当前需要加载indexPath
     func bannerView(banner: CWBanner, index: Int, indexPath: IndexPath) -> UICollectionViewCell
+    
+    /// 点击
+    /// - Parameters:
+    ///   - banner: 控件对象
+    ///   - index: 触发点击事件的index
+    ///   - indexPath: 触发点击事件的indexPath
     func didSelected(banner: CWBanner, index: Int, indexPath: IndexPath)
+    
+    /// 开始滚动
+    /// - Parameters:
+    ///   - banner: 控件对象
+    ///   - index: 开始时的index
+    ///   - indexPath: 开始时的indexPath
     func didStartScroll(banner: CWBanner, index: Int, indexPath: IndexPath)
+    
+    /// 结束滚动
+    /// - Parameters:
+    ///   - banner: 控件对象
+    ///   - index: 结束后居中的index
+    ///   - indexPath: 居中后结束的indexPath
     func didEndScroll(banner: CWBanner, index: Int, indexPath: IndexPath)
 }
 
@@ -21,9 +62,11 @@ protocol CWBannerPageControl where Self: UIView {
     var currentPage: Int? {set get}
     /// 总数
     var numberOfPages: Int? {get set}
-    /// 设置当前下标,可以在这里处理一些动画效果
+    /// 自定义pageControl被添加到控件上后会调此方法, 在这里可以设置pageControl的布局
+    func setupLayoutWhenMoveToBannerView(_ banner: CWBanner) -> Void
+    /// 设置当前下标,可以在这里处理一些动画效果 (暂时未实现)
     func setCurrentPage(_ page: Int) -> Void
-    /// 设置总数,可以在这里处理视图的创建
+    /// 设置总数,可以在这里处理视图的创建 (暂时未实现)
     func setNumberOfPages(_ number: Int) -> Void
 }
 
@@ -57,12 +100,16 @@ class CWBanner: UIView {
     }
     
     //MARK: - Property
+    /// 是否展示PageControl 默认:true
+    var showPageControl = true
+    /// 没有数据时的占位图
+    let emptyImgView = UIImageView.init(frame: CGRect.zero)
     /// 自定义layout
     let flowLayout: CWSwiftFlowLayout
     /// collectionView
     lazy var banner: UICollectionView = {
 //        let rect = self.bounds
-        let b = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: self.flowLayout)
+        let b = CWCollectionView.init(frame: CGRect.zero, collectionViewLayout: self.flowLayout)
         b.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(b)
         self.sendSubviewToBack(b)
@@ -81,6 +128,11 @@ class CWBanner: UIView {
                                                            metrics: nil,
                                                            views: ["view" : b]))
         b.register(UICollectionViewCell.classForCoder(), forCellWithReuseIdentifier: "tempCell")
+        
+        self.addSubview(self.emptyImgView)
+        self.emptyImgView.translatesAutoresizingMaskIntoConstraints = false
+        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[empty]|", options: [], metrics: nil, views: ["empty":emptyImgView]))
+        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[empty]|", options: [], metrics: nil, views: ["empty":emptyImgView]))
         return b
     }()
     /// 外部代理委托
@@ -92,7 +144,8 @@ class CWBanner: UIView {
             if self.customPageControl == nil {
                 self.pageControl.currentPage = current
             }else {
-                self.customPageControl?.setCurrentPage(current)
+//                self.customPageControl?.setCurrentPage(current)
+                self.customPageControl?.currentPage = current
             }
         }
     }
@@ -128,6 +181,9 @@ class CWBanner: UIView {
                     self.addSubview(custom);
                     self.bringSubviewToFront(custom);
                     self.pageControl.removeFromSuperview();
+                    newValue?.setupLayoutWhenMoveToBannerView(self)
+                    newValue?.numberOfPages = self.delegate?.bannerNumbers()
+                    newValue?.currentPage = 0
                 }
             }
         }
@@ -136,7 +192,7 @@ class CWBanner: UIView {
     /// 控件版本号
     var version: String {
         get{
-            return "1.1.7";
+            return "1.1.8";
         }
     }
     
@@ -148,8 +204,16 @@ class CWBanner: UIView {
 extension CWBanner {
     /// 刷新数据
     func freshBanner() {
+        self.stop()
         self.banner.reloadData()
         self.banner.layoutIfNeeded()
+        if nil != self.customPageControl {
+            self.customPageControl?.numberOfPages = self.delegate?.bannerNumbers() ?? 0
+            self.customPageControl?.currentPage = 0
+        }else {
+            self.pageControl.numberOfPages = self.delegate?.bannerNumbers() ?? 0
+            self.pageControl.currentPage = 0
+        }
         self.scrollToIndexPathNoAnimated(self.originIndexPath())
         if self.autoPlay {
             self.play()
@@ -157,6 +221,12 @@ extension CWBanner {
     }
     
     fileprivate func play() {
+        if self.numbers <= 1 {
+            self.timer?.fireDate = Date.distantFuture
+            self.timer?.invalidate()
+            self.timer = nil
+            return
+        }
         if self.timer == nil {
             if #available(iOS 10.0, *) {
                 self.timer = Timer.scheduledTimer(withTimeInterval: self.timeInterval, repeats: true, block: {[weak self] (timer) in
@@ -222,7 +292,7 @@ extension CWBanner {
         if(self.autoPlay) {
             self.resumePlay()
         }
-        self.adjustErrorCell(isScroll: true)
+        self.adjustErrorCell(isScroll: true, animation: false)
     }
     
     /// banner所处控制器WillDisAppear方法中调用
@@ -230,7 +300,7 @@ extension CWBanner {
         if(self.autoPlay) {
             self.pause()
         }
-        self.adjustErrorCell(isScroll: true)
+        self.adjustErrorCell(isScroll: true, animation: false)
     }
 }
 
@@ -258,13 +328,22 @@ extension CWBanner {
     ///
     /// - Returns: 返回对应的indexPath
     fileprivate func originIndexPath() -> IndexPath {
+        
+        guard self.numbers > 0 else {
+            return IndexPath.init(index: 0)
+        }
+        
         if endless
         {
             // 判断一共可以分成多少组
             let centerIndex = self.factNumbers / self.numbers
             if centerIndex <= 1 {
                 // 小于或者只有一组
-                self.currentIndexPath = IndexPath.init(row: self.numbers, section: 0)
+                if self.numbers == 1 {
+                    self.currentIndexPath = IndexPath.init(row: 0, section: 0)
+                }else {
+                    self.currentIndexPath = IndexPath.init(row: self.numbers, section: 0)
+                }
             }else {
                 // 取最中间的一组开始展示
                 self.currentIndexPath = IndexPath.init(row: centerIndex / 2 * self.numbers, section: 0)
@@ -293,15 +372,21 @@ extension CWBanner {
     }
     
     fileprivate func scrollToIndexPathAnimated(_ indexPath: IndexPath) {
+        guard self.numbers > 0 else {
+            return
+        }
         self.banner.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
     }
     
     fileprivate func scrollToIndexPathNoAnimated(_ indexPath: IndexPath) {
+        guard self.numbers > 0 else {
+            return
+        }
         self.banner.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
     }
     
     /// cell错位检测和调整
-    fileprivate func adjustErrorCell(isScroll: Bool)
+    func adjustErrorCell(isScroll: Bool, animation: Bool = true)
     {
         let indexPaths = self.banner.indexPathsForVisibleItems
         var attriArr = [UICollectionViewLayoutAttributes?]()
@@ -331,22 +416,23 @@ extension CWBanner {
         }
         if isScroll
         {
-            self.scrollViewWillBeginDecelerating(self.banner)
+            self.cw_scrollViewWillBeginDecelerating(self.banner, animation: animation)
         }
     }
     
     @objc fileprivate func appActive(_ notify: Notification) {
-        self.adjustErrorCell(isScroll: true)
+        self.adjustErrorCell(isScroll: true, animation: false)
     }
     
     @objc fileprivate func appInactive(_ notify: Notification) {
-        self.adjustErrorCell(isScroll: true)
+        self.adjustErrorCell(isScroll: true, animation: false)
     }
 }
 
 // MARK: - UI
 extension CWBanner {
     fileprivate func configureBanner() {
+        
         if self.customPageControl == nil {
             self.addSubview(self.pageControl)
             self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[control]-0-|",
@@ -359,6 +445,7 @@ extension CWBanner {
                                                                views: ["control" : self.pageControl]))
         }else {
             self.addSubview(self.customPageControl!)
+            
         }
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(appActive(_:)), name: UIApplication.didBecomeActiveNotification ,
@@ -373,8 +460,10 @@ extension CWBanner {
 
 // MARK: - UIScrollViewDelegate
 extension CWBanner {
+    
     /// 开始拖拽
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        
         if #available(iOS 14.0, *) {
             self.banner.isPagingEnabled = false
         } else {
@@ -384,6 +473,7 @@ extension CWBanner {
             self.pause()
         }
         self.delegate?.didStartScroll(banner: self, index: self.caculateIndex(indexPath: self.currentIndexPath), indexPath: self.currentIndexPath)
+        
     }
     
     /// 将要结束拖拽
@@ -401,11 +491,13 @@ extension CWBanner {
             
             if velocity.x >= 0 && self.currentIndexPath.row == maxIndex
             {
+                self.adjustErrorCell(isScroll: true)
                 return
             }
             
             if velocity.x <= 0 && self.currentIndexPath.row == minIndex
             {
+                self.adjustErrorCell(isScroll: true)
                 return
             }
         }
@@ -427,7 +519,10 @@ extension CWBanner {
     
     /// 将要开始减速
     func scrollViewWillBeginDecelerating(_ scrollView: UIScrollView) {
-        
+        self.cw_scrollViewWillBeginDecelerating(scrollView, animation: true)
+    }
+    
+    func cw_scrollViewWillBeginDecelerating(_ scrollView: UIScrollView, animation: Bool = true) {
         guard self.currentIndexPath.row >= 0,
             self.currentIndexPath.row < self.factNumbers else {
             // 越界保护
@@ -447,7 +542,11 @@ extension CWBanner {
         }
         
         // 在这里将需要显示的cell置为居中
-        self.scrollToIndexPathAnimated(self.currentIndexPath)
+        if animation {
+            self.scrollToIndexPathAnimated(self.currentIndexPath)
+        }else {
+            self.scrollToIndexPathNoAnimated(self.currentIndexPath)
+        }
     }
     
     /// 结束减速
@@ -475,7 +574,15 @@ extension CWBanner {
         if self.autoPlay {
             self.pause()
         }
+        if false == endless {
+            switch self.flowLayout.style {
+            case .preview_normal:()
+                
+            default:()
+            }
+        }
     }
+    
 }
 
  // MARK: - UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout
@@ -501,7 +608,7 @@ extension CWBanner: UICollectionViewDelegate, UICollectionViewDataSource, UIColl
                                    index: self.caculateIndex(indexPath: indexPath),
                                    indexPath: indexPath)
         // 处于动画中时,点击cell,可能会出现cell不居中问题.这里处理下
-        // 将里中心点最近的那个cell居中
+        // 将里中心点最近的那个cell居
         self.adjustErrorCell(isScroll: true)
     }
 }
@@ -510,17 +617,34 @@ extension CWBanner: UICollectionViewDelegate, UICollectionViewDataSource, UIColl
 extension CWBanner {
     /// 背地里实际返回的cell个数
     fileprivate var factNumbers: Int {
+        
         guard self.numbers > 0 else
         {
             return 0;
         }
+            
+        self.banner.isScrollEnabled = true
+        self.pageControl.isHidden = !self.showPageControl
+        self.customPageControl?.isHidden = !self.showPageControl
         
         if endless
         {
+            guard self.numbers > 1 else {
+                // 只有一张图, 不准滑动, 隐藏pageControl
+                self.banner.isScrollEnabled = false
+                self.pageControl.isHidden = true
+                self.customPageControl?.isHidden = true
+                return self.numbers
+            }
             return 100
         }
         else if self.flowLayout.style != .normal
         {
+            if self.numbers == 1 {
+                self.banner.isScrollEnabled = false
+                self.pageControl.isHidden = true
+                self.customPageControl?.isHidden = true
+            }
             return self.numbers + 2
         }
         
@@ -529,7 +653,9 @@ extension CWBanner {
     
     /// 业务层实际需要展示的cell个数
     fileprivate var numbers: Int {
-        return self.delegate?.bannerNumbers() ?? 0
+        let count = self.delegate?.bannerNumbers() ?? 0
+        self.emptyImgView.isHidden = count != 0
+        return count
     }
 }
 

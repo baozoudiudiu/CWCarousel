@@ -91,6 +91,7 @@ class CWSwiftFlowLayout: UICollectionViewFlowLayout {
     //MARK: - Property
     /// banner风格
     let style: CWBannerStyle
+    
     /// 每张图之间的间距, 默认为0
     var itemSpace: CGFloat = 1
     

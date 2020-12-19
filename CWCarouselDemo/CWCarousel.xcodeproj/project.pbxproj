@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		281EFA0A20FF385E001859F3 /* CWBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281EFA0920FF385E001859F3 /* CWBanner.swift */; };
-		281EFA0C20FF38D6001859F3 /* CWSwiftFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281EFA0B20FF38D6001859F3 /* CWSwiftFlowLayout.swift */; };
 		2826F4472101C3EE00BC32CB /* ShowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2826F4462101C3EE00BC32CB /* ShowViewController.swift */; };
 		2882BCDF20FC7B97006E8063 /* CWPageControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 2882BCDE20FC7B97006E8063 /* CWPageControl.m */; };
 		28D8861920F44EAE00BDED3D /* 05.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 28D8861420F44EAD00BDED3D /* 05.jpg */; };
@@ -16,6 +14,8 @@
 		28D8861B20F44EAE00BDED3D /* 04.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 28D8861620F44EAE00BDED3D /* 04.jpg */; };
 		28D8861C20F44EAE00BDED3D /* 02.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 28D8861720F44EAE00BDED3D /* 02.jpg */; };
 		28D8861D20F44EAE00BDED3D /* 01.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 28D8861820F44EAE00BDED3D /* 01.jpg */; };
+		6647FD98258E079A005A9547 /* CWBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6647FD96258E079A005A9547 /* CWBanner.swift */; };
+		6647FD99258E079A005A9547 /* CWSwiftFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6647FD97258E079A005A9547 /* CWSwiftFlowLayout.swift */; };
 		666851A22073BBF900F91985 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 666851A12073BBF900F91985 /* AppDelegate.m */; };
 		666851A52073BBF900F91985 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 666851A42073BBF900F91985 /* ViewController.m */; };
 		666851A82073BBF900F91985 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 666851A62073BBF900F91985 /* Main.storyboard */; };
@@ -28,8 +28,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		281EFA0920FF385E001859F3 /* CWBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CWBanner.swift; sourceTree = "<group>"; };
-		281EFA0B20FF38D6001859F3 /* CWSwiftFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CWSwiftFlowLayout.swift; sourceTree = "<group>"; };
 		2826F4462101C3EE00BC32CB /* ShowViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowViewController.swift; sourceTree = "<group>"; };
 		2882BCDD20FC7B97006E8063 /* CWPageControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CWPageControl.h; sourceTree = "<group>"; };
 		2882BCDE20FC7B97006E8063 /* CWPageControl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CWPageControl.m; sourceTree = "<group>"; };
@@ -38,6 +36,8 @@
 		28D8861620F44EAE00BDED3D /* 04.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 04.jpg; sourceTree = "<group>"; };
 		28D8861720F44EAE00BDED3D /* 02.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 02.jpg; sourceTree = "<group>"; };
 		28D8861820F44EAE00BDED3D /* 01.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 01.jpg; sourceTree = "<group>"; };
+		6647FD96258E079A005A9547 /* CWBanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWBanner.swift; path = ../../../Swift_CWCarousel/CWBanner.swift; sourceTree = "<group>"; };
+		6647FD97258E079A005A9547 /* CWSwiftFlowLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWSwiftFlowLayout.swift; path = ../../../Swift_CWCarousel/CWSwiftFlowLayout.swift; sourceTree = "<group>"; };
 		6668519D2073BBF800F91985 /* CWCarousel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CWCarousel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		666851A02073BBF900F91985 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		666851A12073BBF900F91985 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -135,9 +135,9 @@
 		666851B72073BC0C00F91985 /* Swift */ = {
 			isa = PBXGroup;
 			children = (
+				6647FD96258E079A005A9547 /* CWBanner.swift */,
+				6647FD97258E079A005A9547 /* CWSwiftFlowLayout.swift */,
 				666851B82073BC8A00F91985 /* CWCarousel-Bridging-Header.h */,
-				281EFA0920FF385E001859F3 /* CWBanner.swift */,
-				281EFA0B20FF38D6001859F3 /* CWSwiftFlowLayout.swift */,
 			);
 			path = Swift;
 			sourceTree = "<group>";
@@ -237,15 +237,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				666851A52073BBF900F91985 /* ViewController.m in Sources */,
-				281EFA0A20FF385E001859F3 /* CWBanner.swift in Sources */,
 				666851C22073C1AC00F91985 /* CWFlowLayout.m in Sources */,
 				666851B02073BBF900F91985 /* main.m in Sources */,
+				6647FD99258E079A005A9547 /* CWSwiftFlowLayout.swift in Sources */,
 				666851BA2073BC8B00F91985 /* SViewController.swift in Sources */,
 				2826F4472101C3EE00BC32CB /* ShowViewController.swift in Sources */,
 				2882BCDF20FC7B97006E8063 /* CWPageControl.m in Sources */,
 				666851A22073BBF900F91985 /* AppDelegate.m in Sources */,
-				281EFA0C20FF38D6001859F3 /* CWSwiftFlowLayout.swift in Sources */,
 				666851BD2073BF5600F91985 /* CWCarousel.m in Sources */,
+				6647FD98258E079A005A9547 /* CWBanner.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
