@@ -221,7 +221,7 @@ extension CWBanner {
     }
     
     fileprivate func play() {
-        if self.numbers <= 1 {
+        if self.numbers <= 1 || self.autoPlay == false {
             self.timer?.fireDate = Date.distantFuture
             self.timer?.invalidate()
             self.timer = nil
@@ -422,9 +422,11 @@ extension CWBanner {
     
     @objc fileprivate func appActive(_ notify: Notification) {
         self.adjustErrorCell(isScroll: true, animation: false)
+        self.play()
     }
     
     @objc fileprivate func appInactive(_ notify: Notification) {
+        self.pause()
         self.adjustErrorCell(isScroll: true, animation: false)
     }
 }
