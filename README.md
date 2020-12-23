@@ -34,6 +34,7 @@
 | 1.1.3 | 适配swift5.0 |
 | 1.1.4 | 修复通过layout创建视图,偶现不自动轮播问题. |
 | 1.1.7 | 适配iOS14 感谢[milletZZ](https://github.com/milletZZ) |
+| 1.1.8| 1.fix bug，2. 自定义pageControl优化， 3.只有一张图时不可无限滑动， 4.无数据时可以设置占位视图|
 
 <!--![example.gif](https://github.com/baozoudiudiu/CWCarousel/blob/master/CWCarousel/Sources/example.gif)-->
 ![example.gif](https://upload-images.jianshu.io/upload_images/3096223-64b23965562677f7.gif?imageMogr2/auto-orient/strip)
