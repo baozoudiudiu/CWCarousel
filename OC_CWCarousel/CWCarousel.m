@@ -172,6 +172,16 @@
             maxIndex = [self infactNumbers] - 2;
             minIndex = 1;
         }
+        if (velocity.x == 0) {
+            //还有一种情况,当滑动后手指按住不放,然后松开,此时的加速度其实是为0的
+            [self adjustErrorCell:NO];
+            if (@available(iOS 14.0, *)) {
+                // iOS14以前,就算加速度为0,后续系统会还是会走scrollViewWillBeginDecelerating:回调
+                // 但是iOS14以后,加速度为0时,不会在后续执行回调.这里手动触发一下
+                [self scrollViewWillBeginDecelerating:self.carouselView];
+            }
+            return;
+        }
         if (velocity.x >= 0 && self.currentIndexPath.row == maxIndex)
         {
             return;
