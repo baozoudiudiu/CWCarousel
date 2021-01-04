@@ -263,6 +263,7 @@ extension CWBanner {
     
     /// 继续滚动轮播图
     func resumePlay() {
+        self.pause()
         self.play()
     }
     
@@ -397,11 +398,7 @@ extension CWBanner {
         }
         let centerX: CGFloat = self.banner.contentOffset.x + self.banner.frame.width * 0.5
         var minSpace = CGFloat(MAXFLOAT)
-//        var shouldSet = true
-//        if self.flowLayout.style != .normal && indexPaths.count <= 2
-//        {
-//            shouldSet = false
-//        }
+        var newIndexPath: IndexPath = self.currentIndexPath
         for atr in attriArr
         {
             if let obj = atr
@@ -410,9 +407,13 @@ extension CWBanner {
                 if(abs(minSpace) > abs(obj.center.x - centerX))
                 {
                     minSpace = obj.center.x - centerX;
-                    self.currentIndexPath = obj.indexPath;
+                    newIndexPath = obj.indexPath;
                 }
             }
+        }
+        /// 正常情况下 newIndexPath 和 currentIndexPath 不会相差超过 2, 如果超过4明显不正常,就不做处理
+        if abs(newIndexPath.row - self.currentIndexPath.row) < 4 {
+            self.currentIndexPath = newIndexPath
         }
         if isScroll
         {

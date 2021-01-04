@@ -34,6 +34,7 @@ class ShowViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.bannerView.bannerWillAppear()
+//        self.bannerView.freshBanner()
     }
     
     override func viewWillDisappear(_ animated: Bool) {

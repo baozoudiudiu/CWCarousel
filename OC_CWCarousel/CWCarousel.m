@@ -267,16 +267,34 @@
 }
 #pragma mark - < Logic Helper >
 - (NSIndexPath *)originIndexPath {
-    NSInteger centerIndex = [self infactNumbers] / [self numbers];
-    if(centerIndex <= 1) {
-        self.currentIndexPath = [NSIndexPath indexPathForRow:self.numbers inSection:0];
-    }else {
-        self.currentIndexPath = [NSIndexPath indexPathForRow:centerIndex / 2 * [self numbers] inSection:0];
+    
+    NSInteger num = [self numbers];
+    if (num <= 0) {
+        return [[NSIndexPath alloc] initWithIndex:0];
     }
+    
+    NSInteger centerIndex = [self infactNumbers] / [self numbers];
+    
+    if (self.endless) {
+        if(centerIndex <= 1) {
+            if (centerIndex == 1) {
+                self.currentIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+            }else {
+                self.currentIndexPath = [NSIndexPath indexPathForRow:self.numbers inSection:0];
+            }
+        }else {
+            self.currentIndexPath = [NSIndexPath indexPathForRow:centerIndex / 2 * [self numbers] inSection:0];
+        }
+    }else {
+        NSInteger row = self.flowLayout.style == CWCarouselStyle_Normal ? 0 : 1;
+        self.currentIndexPath = [NSIndexPath indexPathForRow:row inSection:0];
+    }
+    
     return self.currentIndexPath;
 }
 
 - (void)checkOutofBounds {
+    if ([self numbers] <= 0) {return;}
     // 越界检查
     if(self.currentIndexPath.row == [self infactNumbers] - 1) {
         //最后一张
@@ -545,8 +563,21 @@
  @return 轮播图实际加载视图个数
  */
 - (NSInteger)infactNumbers {
+    
+    NSInteger num = [self numbers];
+    
+    if ( 0 >= num) {
+        return 0;
+    }
+
+    [self.carouselView setScrollEnabled:YES];
+    
     if (self.endless)
     {
+        if (num < 1) {
+            [self.carouselView setScrollEnabled:NO];
+            return num;
+        }
         // 如果是无限轮播,默认加载300个
         return 300;
     }
@@ -559,6 +590,9 @@
         }
         else
         {
+            if (num == 1) {
+                [self.carouselView setScrollEnabled:NO];
+            }
             // 前后2个占位cell,所以+2
             return [self numbers] + 2;
         }
