@@ -1,4 +1,4 @@
-# CWCarousel
+# CWCarousel （建议使用swift版本， swift版本维护频率会比OC高）
 
 ## 基于collectionView实现的通用无限轮播图封装.
 
