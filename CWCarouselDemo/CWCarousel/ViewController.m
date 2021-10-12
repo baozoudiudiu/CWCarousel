@@ -85,6 +85,11 @@
     carousel.backgroundColor = [UIColor whiteColor];
     [carousel registerViewClass:[UICollectionViewCell class] identifier:@"cellId"];
     self.carousel = carousel;
+    
+    if (self.cusPageControlSwitch.isOn) {
+        [self setPageControl];
+    }
+    
     [self requestNetworkData];
 }
 
@@ -142,20 +147,23 @@
 
 - (IBAction)customPageControlChanged:(UISwitch *)sender {
     if (sender.isOn) {
-        CGFloat width = [CWPageControl widthFromNumber:self.dataArr.count];
-        CWPageControl *pageC = [[CWPageControl alloc] initWithFrame:CGRectMake(0, 0, width, 20)];
-        pageC.translatesAutoresizingMaskIntoConstraints = NO;
-        [[pageC.widthAnchor constraintEqualToConstant:width] setActive:YES];
-        /**
-         这里我自己给了宽度, 所以就不再自定义布局代理:
-            - (void)CWCarousel:(CWCarousel *)carousel addPageControl:(UIView *)pageControl;
-         */
-        
-        self.carousel.customPageControl = pageC;
+        [self setPageControl];
     }else {
         self.carousel.customPageControl = nil;
     }
     [self.carousel freshCarousel];
+}
+
+- (void)setPageControl {
+    CGFloat width = [CWPageControl widthFromNumber:self.dataArr.count];
+    CWPageControl *pageC = [[CWPageControl alloc] initWithFrame:CGRectMake(0, 0, width, 20)];
+    pageC.translatesAutoresizingMaskIntoConstraints = NO;
+    [[pageC.widthAnchor constraintEqualToConstant:width] setActive:YES];
+    /**
+     这里我自己给了宽度, 所以就不再自定义布局代理:
+        - (void)CWCarousel:(CWCarousel *)carousel addPageControl:(UIView *)pageControl;
+     */
+    self.carousel.customPageControl = pageC;
 }
 
 - (IBAction)buttonClick {
