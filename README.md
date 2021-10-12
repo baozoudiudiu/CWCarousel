@@ -27,13 +27,13 @@ oc版和swift是两份完全不同的代码，所以代码实现不尽相同。�
 #### swift：版本记录
 | 版本号 | 更新内容 |
 | ------ | :----- |
-| 1.1.0 | 功能同OC版 1.1.0 |
-| 1.1.1 | 添加了无限轮播功能开关 endless |
-| 1.1.2 | 修复样式3在320尺寸屏幕上可能出现的问题 |
-| 1.1.3 | 适配swift5.0 |
-| 1.1.4 | 修复通过layout创建视图,偶现不自动轮播问题. |
-| 1.1.7 | 适配iOS14 感谢[milletZZ](https://github.com/milletZZ) |
 | 1.1.8| 1.fix bug，2. 自定义pageControl优化， 3.只有一张图时不可无限滑动， 4.无数据时可以设置占位视图|
+| 1.1.7 | 适配iOS14 感谢[milletZZ](https://github.com/milletZZ) |
+| 1.1.4 | 修复通过layout创建视图,偶现不自动轮播问题. |
+| 1.1.3 | 适配swift5.0 |
+| 1.1.2 | 修复样式3在320尺寸屏幕上可能出现的问题 |
+| 1.1.1 | 添加了无限轮播功能开关 endless |
+| 1.1.0 | 功能同OC版 1.1.0 |
 
 <!--![example.gif](https://github.com/baozoudiudiu/CWCarousel/blob/master/CWCarousel/Sources/example.gif)-->
 ![example.gif](https://upload-images.jianshu.io/upload_images/3096223-64b23965562677f7.gif?imageMogr2/auto-orient/strip)
