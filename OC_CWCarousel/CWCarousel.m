@@ -138,22 +138,9 @@
 }
 
 - (void)willMoveToSuperview:(UIView *)newSuperview {
-    newSuperview.clipsToBounds = NO;
-    if(self.customPageControl == nil && self.pageControl.superview == nil) {
-        [self addSubview:self.pageControl];
-        self.pageControl.translatesAutoresizingMaskIntoConstraints = NO;
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[control]-0-|"
-                                                                     options:kNilOptions
-                                                                     metrics:nil
-                                                                       views:@{@"control" : self.pageControl}]];
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[control(30)]-0-|"
-                                                                     options:kNilOptions
-                                                                     metrics:nil
-                                                                       views:@{@"control" : self.pageControl}]];
-    }else if(self.customPageControl || self.customPageControl.superview == nil) {
-        [self addSubview:self.customPageControl];
-    }
     [super willMoveToSuperview:newSuperview];
+    newSuperview.clipsToBounds = NO;
+    [self configurePageControl];
 }
 
 - (void)registerViewClass:(Class)viewClass identifier:(NSString *)identifier {
@@ -393,29 +380,6 @@
     [self.carouselView scrollToItemAtIndexPath:self.currentIndexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
 }
 
-- (void)pageControlClick:(UIPageControl *)sender {
-    if (![sender isKindOfClass:[UIPageControl class]]) {
-        return;
-    }
-    NSInteger page = sender.currentPage;
-    NSInteger prePage = [self caculateIndex:self.currentIndexPath.row];
-    if(page == prePage) {
-        return;
-    }
-    NSIndexPath *indexPath = nil;
-    if(prePage - page == [self numbers] - 1) {
-        //最后一张跳到第一张
-        indexPath = [NSIndexPath indexPathForRow:self.currentIndexPath.row + 1 inSection:0];
-    }else if(page - prePage == [self numbers] - 1) {
-        //第一张跳到最后一张
-        indexPath = [NSIndexPath indexPathForRow:self.currentIndexPath.row - 1 inSection:0];
-    }else {
-        indexPath = [NSIndexPath indexPathForRow:self.currentIndexPath.row + page - prePage inSection:0];
-    }
-    [self.carouselView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
-    self.currentIndexPath = indexPath;
-}
-
 /**
  实际下标转换成业务需求下标
 
@@ -534,6 +498,31 @@
     [self cusScrollViewWillBeginDecelerating:animation scroll:self.carouselView];
 }
 
+- (void)configurePageControl {
+    UIView *control = nil;
+    
+    if (self.customPageControl
+        && [self.customPageControl isKindOfClass:[UIView class]]) {
+        
+        control = self.customPageControl;
+    }else {
+        control = self.pageControl;
+    }
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(CWCarousel:addPageControl:)]) {
+        [self.delegate CWCarousel:self addPageControl:control];
+        return;
+    }
+    
+    [self addSubview:control];
+    control.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[control(20)]-0-|"
+                                                                 options:kNilOptions
+                                                                 metrics:nil
+                                                                   views:@{@"control" : control}]];
+    [[control.centerXAnchor constraintEqualToAnchor:self.centerXAnchor] setActive:YES];
+}
+
 #pragma mark - < Configure View>
 - (void)configureView {
     self.backgroundColor = [UIColor blackColor];
@@ -612,15 +601,23 @@
 }
 
 - (void)setCustomPageControl:(UIView<CWCarouselPageControlProtocol> *)customPageControl {
+    
+    if (_customPageControl == customPageControl) {
+        return;
+    }
+    
+    if (_customPageControl) {
+        [_customPageControl removeFromSuperview];
+    }
+    
     _customPageControl = customPageControl;
-    if(_customPageControl && _customPageControl.superview == nil)
-    {
-        [self addSubview:_customPageControl];
-        [self bringSubviewToFront:_customPageControl];
-        if(self.pageControl.superview == _customPageControl.superview)
-        {
-            [self.pageControl removeFromSuperview];
-        }
+    if (customPageControl && self.pageControl) {
+        [self.pageControl removeFromSuperview];
+        self.pageControl = nil;
+    }
+    
+    if (self.superview) {
+        [self configurePageControl];
     }
 }
 
@@ -675,8 +672,14 @@
 - (NSInteger)numbers {
     if(self.datasource &&
        [self.datasource respondsToSelector:@selector(numbersForCarousel)]) {
-        self.pageControl.numberOfPages = [self.datasource numbersForCarousel];
-        return [self.datasource numbersForCarousel];
+        NSInteger num = [self.datasource numbersForCarousel];
+        if (self.pageControl) {
+            self.pageControl.numberOfPages = num;
+        }
+        if (self.customPageControl) {
+            self.customPageControl.pageNumbers = num;
+        }
+        return num;
     }
     return 0;
 }
@@ -721,20 +724,16 @@
 
 - (UIPageControl *)pageControl {
     if(!_pageControl) {
-        self.pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0, 0, 300, 30)];
-        CGPoint center = self.center;
-        center.y = CGRectGetHeight(self.frame) - 30 * 0.5;
+        self.pageControl = [[UIPageControl alloc] initWithFrame:CGRectZero];
         _pageControl.pageIndicatorTintColor = [UIColor blackColor];
         _pageControl.currentPageIndicatorTintColor = [UIColor whiteColor];
         _pageControl.userInteractionEnabled = NO;
-        [_pageControl addTarget:self action:@selector(pageControlClick:) forControlEvents:UIControlEventTouchUpInside];
-        _pageControl.center = center;
     }
     return _pageControl;
 }
 
 - (NSString *)version {
-    return @"1.1.7";
+    return @"1.1.8";
 }
 @end
 

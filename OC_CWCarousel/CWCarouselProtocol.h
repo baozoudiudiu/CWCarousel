@@ -39,6 +39,17 @@
  @param indexPathRow 结束滑动时,处于中心点图片在控件内部的实际下标
  */
 - (void)CWCarousel:(CWCarousel *)carousel didEndScrollAtIndex:(NSInteger)index indexPathRow:(NSInteger)indexPathRow;
+
+/**
+ 开始布局pageControl时会触发该回调
+    -- 当没有实现customPageControl时, pageControl为默认的pageControl
+    -- 当实现了customPageControl时, pageControl为自定义的pageControl
+ 
+ 可以在这个回调中自定义pageControl的布局, 如果没有实现该回调, 将默认在底部居中.
+ 注意:
+    -- 当自定义的pageControl宽度布局不是自己撑开的时候, 请在该回调中自己布局. 否则采用默认的布局将不可见.
+ */
+- (void)CWCarousel:(CWCarousel *)carousel addPageControl:(UIView *)pageControl;
 @end
 
 @protocol CWCarouselDatasource<NSObject>
@@ -65,11 +76,11 @@
 /**
  总页数
  */
-@property (nonatomic, assign) NSInteger         pageNumbers;
+@property (nonatomic, assign, readonly) NSInteger         pageNumbers;
 /**
  当前页
  */
-@property (nonatomic, assign) NSInteger         currentPage;
+@property (nonatomic, assign, readonly) NSInteger         currentPage;
 
 - (void)setCurrentPage:(NSInteger)currentPage;
 - (void)setPageNumbers:(NSInteger)pageNumbers;

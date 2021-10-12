@@ -24,6 +24,7 @@
 @property (weak, nonatomic) IBOutlet UISwitch   *autoSwitch;
 @property (weak, nonatomic) IBOutlet UILabel    *spaceLab;
 @property (weak, nonatomic) IBOutlet UIStepper  *spaceSteper;
+@property (weak, nonatomic) IBOutlet UISwitch   *cusPageControlSwitch;
 @end
 
 @implementation ViewController
@@ -52,7 +53,6 @@
         self.carousel = nil;
     }
     
-    self.contentView.backgroundColor = [UIColor whiteColor];
     CWFlowLayout *flowLayout = [[CWFlowLayout alloc] initWithStyle:[self styleFromTag:tag]];
     flowLayout.itemSpace_H = 0;
     self.spaceLab.text = @"0";
@@ -83,15 +83,6 @@
     carousel.autoTimInterval = 2;
     carousel.endless = self.endlessSwitch.isOn;
     carousel.backgroundColor = [UIColor whiteColor];
-    /* 自定pageControl */
-    CGRect frame = self.contentView.bounds;
-    if(self.openCustomPageControl) {
-        CWPageControl *control = [[CWPageControl alloc] initWithFrame:CGRectMake(0, 0, 300, 20)];
-        control.center = CGPointMake(CGRectGetWidth(frame) * 0.5, CGRectGetHeight(frame) - 10);
-        control.pageNumbers = 5;
-        control.currentPage = 0;
-        carousel.customPageControl = control;
-    }
     [carousel registerViewClass:[UICollectionViewCell class] identifier:@"cellId"];
     self.carousel = carousel;
     [self requestNetworkData];
@@ -149,6 +140,28 @@
     [self.carousel freshCarousel];
 }
 
+- (IBAction)customPageControlChanged:(UISwitch *)sender {
+    if (sender.isOn) {
+        CGFloat width = [CWPageControl widthFromNumber:self.dataArr.count];
+        CWPageControl *pageC = [[CWPageControl alloc] initWithFrame:CGRectMake(0, 0, width, 20)];
+        pageC.translatesAutoresizingMaskIntoConstraints = NO;
+        [[pageC.widthAnchor constraintEqualToConstant:width] setActive:YES];
+        /**
+         这里我自己给了宽度, 所以就不再自定义布局代理:
+            - (void)CWCarousel:(CWCarousel *)carousel addPageControl:(UIView *)pageControl;
+         */
+        
+        self.carousel.customPageControl = pageC;
+    }else {
+        self.carousel.customPageControl = nil;
+    }
+    [self.carousel freshCarousel];
+}
+
+- (IBAction)buttonClick {
+    [self.carousel scrollTo:2 animation:YES];
+}
+
 #pragma mark - 网络层
 - (void)requestNetworkData {
     // 模拟网络请求
@@ -196,7 +209,7 @@
 }
 
 - (void)CWCarousel:(CWCarousel *)carousel didSelectedAtIndex:(NSInteger)index {
-    
+    NSLog(@"did selected at index %ld", index);
 }
 
 

@@ -69,10 +69,7 @@
 
 
 /**
- 默认的pageControl
- 1. 默认在水平居中正下方
- 2. 位置可以自己根据frame自行调整
- 3. 如果不想将其添加在carousel上,请自行通过调用目标父视图的addSubview方法添加到其他父视图上
+ 默认的pageControl, 当设置了customPageControl时, 该属性为nil
  */
 @property (nonatomic, strong) UIPageControl               * _Nullable pageControl;
 

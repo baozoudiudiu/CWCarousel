@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 #import "CWCarouselProtocol.h"
 @interface CWPageControl : UIView<CWCarouselPageControlProtocol>
-
++ (CGFloat)widthFromNumber:(NSInteger)num;
 @end

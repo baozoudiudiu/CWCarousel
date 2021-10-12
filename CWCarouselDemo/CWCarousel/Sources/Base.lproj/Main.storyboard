@@ -124,6 +124,40 @@
                                     <constraint firstAttribute="trailing" secondItem="nCh-2l-RSf" secondAttribute="trailing" id="yex-YD-Mdk"/>
                                 </constraints>
                             </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Snj-pO-71d">
+                                <rect key="frame" x="26" y="537" width="323" height="44"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="自定义pageControl" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pSa-Yd-oHf">
+                                        <rect key="frame" x="0.0" y="11.5" width="146" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Lcw-8s-n11">
+                                        <rect key="frame" x="274" y="6.5" width="51" height="31"/>
+                                        <connections>
+                                            <action selector="customPageControlChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="lnd-mJ-F2G"/>
+                                        </connections>
+                                    </switch>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="pSa-Yd-oHf" firstAttribute="leading" secondItem="Snj-pO-71d" secondAttribute="leading" id="5qH-zq-UZv"/>
+                                    <constraint firstItem="Lcw-8s-n11" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="pSa-Yd-oHf" secondAttribute="trailing" constant="8" symbolic="YES" id="99b-n5-tSi"/>
+                                    <constraint firstItem="Lcw-8s-n11" firstAttribute="centerY" secondItem="Snj-pO-71d" secondAttribute="centerY" id="9zD-f3-DXe"/>
+                                    <constraint firstItem="pSa-Yd-oHf" firstAttribute="centerY" secondItem="Snj-pO-71d" secondAttribute="centerY" id="Jv7-wZ-s6g"/>
+                                    <constraint firstAttribute="height" constant="44" id="uso-Bw-aqt"/>
+                                    <constraint firstAttribute="trailing" secondItem="Lcw-8s-n11" secondAttribute="trailing" id="zNX-bi-4dj"/>
+                                </constraints>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zFZ-sA-KbK">
+                                <rect key="frame" x="132.5" y="601" width="110" height="31"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="滚动到第三张"/>
+                                <connections>
+                                    <action selector="buttonClick" destination="BYZ-38-t0r" eventType="touchUpInside" id="5Tj-00-5bG"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -131,15 +165,20 @@
                             <constraint firstItem="Ol7-MA-Klu" firstAttribute="trailing" secondItem="AXX-rs-EOZ" secondAttribute="trailing" id="5Qe-gC-rdo"/>
                             <constraint firstItem="Ol7-MA-Klu" firstAttribute="leading" secondItem="AXX-rs-EOZ" secondAttribute="leading" id="AHo-a8-qYp"/>
                             <constraint firstItem="AXX-rs-EOZ" firstAttribute="top" secondItem="RBa-OQ-9HF" secondAttribute="bottom" constant="20" id="Arq-ck-NKW"/>
+                            <constraint firstItem="Snj-pO-71d" firstAttribute="trailing" secondItem="On2-qg-c07" secondAttribute="trailing" id="BJc-Ks-vFb"/>
+                            <constraint firstItem="Snj-pO-71d" firstAttribute="top" secondItem="On2-qg-c07" secondAttribute="bottom" constant="20" id="Iax-Bm-wtq"/>
                             <constraint firstItem="AXX-rs-EOZ" firstAttribute="leading" secondItem="RBa-OQ-9HF" secondAttribute="leading" id="IpT-oW-ZuE"/>
                             <constraint firstItem="AXX-rs-EOZ" firstAttribute="trailing" secondItem="RBa-OQ-9HF" secondAttribute="trailing" id="Kfh-Gl-TGR"/>
+                            <constraint firstItem="zFZ-sA-KbK" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="XCN-En-5xU"/>
                             <constraint firstAttribute="trailing" secondItem="W58-db-ECf" secondAttribute="trailing" id="abL-Vt-lfY"/>
+                            <constraint firstItem="zFZ-sA-KbK" firstAttribute="top" secondItem="Snj-pO-71d" secondAttribute="bottom" constant="20" id="bmI-NY-gDx"/>
                             <constraint firstItem="RBa-OQ-9HF" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="10" id="bwA-kd-b3e"/>
                             <constraint firstItem="RBa-OQ-9HF" firstAttribute="top" secondItem="W58-db-ECf" secondAttribute="bottom" constant="20" id="cSQ-0H-cRG"/>
                             <constraint firstItem="W58-db-ECf" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="fnG-h2-OIK"/>
                             <constraint firstItem="W58-db-ECf" firstAttribute="top" secondItem="vpv-yZ-LEk" secondAttribute="bottom" id="kfi-9P-ZFk"/>
                             <constraint firstItem="On2-qg-c07" firstAttribute="trailing" secondItem="Ol7-MA-Klu" secondAttribute="trailing" id="kqt-f7-dau"/>
                             <constraint firstItem="On2-qg-c07" firstAttribute="top" secondItem="Ol7-MA-Klu" secondAttribute="bottom" constant="20" id="lDF-gx-8a0"/>
+                            <constraint firstItem="Snj-pO-71d" firstAttribute="leading" secondItem="On2-qg-c07" secondAttribute="leading" id="mlc-8r-rK2"/>
                             <constraint firstItem="Ol7-MA-Klu" firstAttribute="top" secondItem="AXX-rs-EOZ" secondAttribute="bottom" constant="20" id="wOK-cV-YEy"/>
                             <constraint firstAttribute="trailingMargin" secondItem="RBa-OQ-9HF" secondAttribute="trailing" constant="10" id="wwd-Hi-uaU"/>
                         </constraints>
@@ -148,6 +187,7 @@
                     <connections>
                         <outlet property="autoSwitch" destination="KLn-vH-cgo" id="mtC-q3-HJq"/>
                         <outlet property="contentView" destination="W58-db-ECf" id="Sxq-5g-9kY"/>
+                        <outlet property="cusPageControlSwitch" destination="Lcw-8s-n11" id="lex-7e-cIA"/>
                         <outlet property="endlessSwitch" destination="qeu-5i-8JK" id="ahR-IZ-23N"/>
                         <outlet property="spaceLab" destination="4pb-bC-lQc" id="Agm-kd-ZIv"/>
                         <outlet property="spaceSteper" destination="nCh-2l-RSf" id="3E6-Td-Urb"/>

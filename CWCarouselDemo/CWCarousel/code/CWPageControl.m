@@ -19,6 +19,7 @@
 @implementation CWPageControl
 @synthesize currentPage;
 @synthesize pageNumbers;
+
 #pragma mark - INITIAL
 - (instancetype)initWithFrame:(CGRect)frame {
     if(self = [super initWithFrame:frame]) {
@@ -26,34 +27,47 @@
     }
     return self;
 }
+
 #pragma mark - PROPERTY
 - (void)setCurrentPage:(NSInteger)currentPage {
-    self.myCurrentPage = currentPage;
     if (currentPage >= self.indicatorArr.count) {
         return;
     }
+    self.myCurrentPage = currentPage;
     UIView *indicator = self.indicatorArr[currentPage];
     [UIView animateWithDuration:0.25 animations:^{
         self.currentIndicator.frame = indicator.frame;
     }];
     
 }
+
 - (void)setPageNumbers:(NSInteger)pageNumbers {
+    if (self.pageNumbers == pageNumbers) {
+        return;
+    }
     self.myPageNumbers = pageNumbers;
     [self createIndicator];
 }
+
 - (NSInteger)currentPage {
     return self.currentPage;
 }
+
 - (NSInteger)pageNumbers {
     return self.myPageNumbers;
 }
+
 #pragma mark - LOGIC HELPER
 - (void)configureView {
     
 }
 
++ (CGFloat)widthFromNumber:(NSInteger)num {
+    return 25 * num + 2 * (num - 1);
+}
+
 - (void)createIndicator {
+    [self.indicatorArr makeObjectsPerformSelector:@selector(removeFromSuperview)];
     CGFloat width = 25;
     CGFloat height = 7;
     CGFloat space = 2;
@@ -68,9 +82,10 @@
         [container addSubview:indictor];
         indictor.backgroundColor = [UIColor groupTableViewBackgroundColor];
         [arr addObject:indictor];
-        if(i == 0) {
-            self.currentIndicator = [[UIView alloc] initWithFrame:CGRectMake(x, y, width, height)];
-            [container addSubview:self.currentIndicator];
+        if(i == 0 && self.currentIndicator == nil) {
+            UIView *indictor = [[UIView alloc] initWithFrame:CGRectMake(x, y, width, height)];
+            [container addSubview:indictor];
+            self.currentIndicator = indictor;
             self.currentIndicator.backgroundColor = [UIColor redColor];
             self.currentIndicator.layer.zPosition = 999;
         }
