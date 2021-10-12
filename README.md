@@ -1,4 +1,4 @@
-# CWCarousel （建议使用swift版本， swift版本维护频率会比OC高）
+# CWCarousel 
 
 ## 基于collectionView实现的通用无限轮播图封装.
 
@@ -6,26 +6,23 @@
 > 2. 部分不能重现的问题暂未处理.
 > 3. 请大家提issue尽量描述详细些,最好能提供代码或者截图.请附上是OC版本还是Swift版本的问题.
 > 4. 谢谢配合,大家一起进步.
-> 代码示例为oc代码, 项目中已有swift版本,请自行下载. oc版本支持cocoaPods安装 `pod search OC_CWCarousel`
+> 5. 代码示例为oc代码, 项目中已有swift版本,请自行下载. 
+> 6. oc版本支持cocoaPods安装 `pod search OC_CWCarousel`
 
-#### 未来版本计划
-> 1. 优化网络图片获取展示逻辑，添加没有请求到网络数据时会显示轮播图缺省样式！
-> 2. 重新修改间距算法，并暴露出对应的属性出来，使自定义间距更加简单化！
-> 3. 优化timer相关逻辑，争取把controllerWillAppear 和 controllerWillDisAppear 这两个方法干掉。
-> 4. 优化自定义pageControl相关逻辑
+#### OC：版本记录
 
-#### OC版本记录
 | 版本号 | 更新内容 |
 | ------ | ------ |
-| 1.1.0 | 修复了之前的一些bug |
-| 1.1.1 | 添加了无限轮播功能开关 endless |
-| 1.1.2 | 控件优化 |
-| 1.1.3 | 提升了一个版本号 |
-| 1.1.4 | 修复样式3在320尺寸屏幕上可能出现的问题 |
-| 1.1.5 | 1.新增了2个代理回调<br>2.点击事件代理回调逻辑优化 |
+| 1.1.8 | 1. 代码重构。<br />2. 计算间距算法修改，更好更简单的设置间距。<br />3. 新增代理回调：`- (void)CWCarousel:(CWCarousel*)carousel addPageControl:(UIView* )pageControl;`可以在该回调中自定义布局pageControl。<br />4. 新增滚动到指定位置方法：`- (void*scrollTo:(NSInteger)index animation:(BOOL)animation`;。<br />5. 废弃了`maxScale`属性。<br />6.优化了自定义pageControl的实现。<br />7.修改了演示demo首页样式和逻辑。 |
 | 1.1.7 | 适配iOS14 感谢[milletZZ](https://github.com/milletZZ) |
+| 1.1.5 | 1.新增了2个代理回调<br/>2.点击事件代理回调逻辑优化 |
+| 1.1.4 | 修复样式3在320尺寸屏幕上可能出现的问题 |
+| 1.1.3 | 提升了一个版本号 |
+| 1.1.2 | 控件优化 |
+| 1.1.1 | 添加了无限轮播功能开关 endless |
+| 1.1.0 | 修复了之前的一些bug |
 
-#### swift版本记录
+#### swift：版本记录
 | 版本号 | 更新内容 |
 | ------ | :----- |
 | 1.1.0 | 功能同OC版 1.1.0 |
