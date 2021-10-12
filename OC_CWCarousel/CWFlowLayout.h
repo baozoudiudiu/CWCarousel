@@ -24,7 +24,7 @@ typedef NS_ENUM(NSUInteger, CWCarouselStyle) {
 
 /**
  * 横向滚动时,每张轮播图之间的间距
- * CWCarouselStyle_H_3 样式时设置无效
+ * CWCarouselStyle_H_3 样式时请设置负值
  */
 @property (nonatomic, assign) CGFloat itemSpace_H;
 
@@ -35,13 +35,14 @@ typedef NS_ENUM(NSUInteger, CWCarouselStyle) {
 @property (nonatomic, assign) CGFloat itemWidth;
 
 /**
- * style = CWCarouselStyle_H_2 有效
+ * style = CWCarouselStyle_H_2, CWCarouselStyle_H_3 有效
  * 前后2张图的缩小比例 (0.0 ~ 1.0)
  * 默认: 0.8
  */
 @property (nonatomic, assign) CGFloat minScale;
 
 /**
+ * (注: 1.1.7 版本后该属性已经废弃, 设置该属性将不生效. 请使用 minScale代替.)
  * style = CWCarouselStyle_H_3 有效
  * 中间一张图放大比例
  * 默认: 1.2

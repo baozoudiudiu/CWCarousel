@@ -472,9 +472,15 @@
 }
 
 - (void)nextCell {
+    
     if([self numbers] <= 0) {
         return;
     }
+    
+    if (!self.isAuto) {
+        return;
+    }
+    
     NSInteger maxIndex = 1;
     if(!self.endless && self.flowLayout.style != CWCarouselStyle_Normal)
     {

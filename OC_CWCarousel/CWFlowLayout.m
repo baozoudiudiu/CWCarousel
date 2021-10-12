@@ -33,8 +33,8 @@
 }
 
 - (void)initial {
-    self.itemSpace_H = 1;
-    self.itemSpace_V = 1;
+    self.itemSpace_H = 0;
+    self.itemSpace_V = 0;
     self.minScale = 0.8;
     self.maxScale = 1.2;
 }
@@ -77,18 +77,30 @@
             self.minimumLineSpacing = self.itemSpace_H;
             break;
         }
-        case CWCarouselStyle_H_2:
+        case CWCarouselStyle_H_2: {
+            CGFloat width = self.itemWidth <= 0 ? self.defaultItemWidth : self.itemWidth;
+            self.itemWidth = width;
+            CGFloat height = CGRectGetHeight(self.collectionView.frame);
+            self.itemSize = CGSizeMake(width, height);
+            self.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+            CGFloat padding = width * (1 - self.minScale) * 0.5;
+            self.factItemSpace = 0;
+            self.minimumLineSpacing = self.itemSpace_H - padding;
+        }
+            break;
         case CWCarouselStyle_H_3: {
             CGFloat width = self.itemWidth <= 0 ? self.defaultItemWidth : self.itemWidth;
             self.itemWidth = width;
             CGFloat height = CGRectGetHeight(self.collectionView.frame);
-            self.itemSize = CGSizeMake(width, self.style == CWCarouselStyle_H_3 ? height / self.maxScale : height);
+            self.itemSize = CGSizeMake(width, height);
             self.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+            CGFloat padding = width * (1 - self.minScale) * 0.5;
             self.factItemSpace = 0;
-            if(width * (1 - self.minScale) * 0.5 < self.itemSpace_H) {
-                self.factItemSpace = self.itemSpace_H - width * (1 - self.minScale) * 0.5;
-            }
-            self.minimumLineSpacing = self.factItemSpace;
+//            if(width * (1 - self.minScale) * 0.5 < self.itemSpace_H) {
+//                self.factItemSpace = self.itemSpace_H - width * (1 - self.minScale) * 0.5;
+//            }
+//            self.minimumLineSpacing = self.factItemSpace;
+            self.minimumLineSpacing = self.itemSpace_H - padding;
         }
             break;
         
@@ -110,19 +122,27 @@
     NSArray<UICollectionViewLayoutAttributes *> *arr = [[NSArray alloc] initWithArray:[super layoutAttributesForElementsInRect:rect] copyItems:YES];
     
     CGFloat centerX = self.collectionView.contentOffset.x + CGRectGetWidth(self.collectionView.frame) * 0.5;
-    CGFloat width = self.itemWidth;
     __block CGFloat maxScale = 0;
     __block UICollectionViewLayoutAttributes *attri = nil;
     
     [arr enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         CGFloat space = ABS(obj.center.x - centerX);
+        space = MIN(space, self.itemWidth + self.factItemSpace);
         obj.zIndex = 0;
         if(space >= 0) {
             CGFloat scale = 1;
-            if (self.style == CWCarouselStyle_H_2) {
+            if (self.style == CWCarouselStyle_H_2 ||
+                self.style == CWCarouselStyle_H_3) {
+                /**
+                 公式: scale = k * space + a
+                    其中: k = (minScale - 1) / (itemWidth + factItemSpace)
+                    其中: a = 1
+                 综上所述:
+                    scale = (minScale - 1) / (itemWitdh + factItemSpace) * space + 1
+                 */
                 scale = (self.minScale - 1) / (self.itemWidth + self.factItemSpace) * space + 1;
             }else {
-                scale = -((self.maxScale - 1) / width) * space + self.maxScale;
+//                scale = -((self.maxScale - 1) / width) * space + self.maxScale;
             }
             obj.transform = CGAffineTransformMakeScale(scale, scale);
             if(maxScale < scale) {

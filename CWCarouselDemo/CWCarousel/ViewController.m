@@ -16,12 +16,14 @@
 @interface ViewController ()<CWCarouselDatasource, CWCarouselDelegate>
 
 @property (nonatomic, strong) CWCarousel *carousel;
-@property (nonatomic, strong) UIView *animationView;
 @property (nonatomic, assign) BOOL openCustomPageControl;
-@property (nonatomic, weak) IBOutlet UISwitch *cusSwitch;
-
-/// 数据源
+@property (weak, nonatomic) IBOutlet UIView *contentView;
 @property (nonatomic, strong) NSArray   *dataArr;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *styleSegment;
+@property (weak, nonatomic) IBOutlet UISwitch   *endlessSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch   *autoSwitch;
+@property (weak, nonatomic) IBOutlet UILabel    *spaceLab;
+@property (weak, nonatomic) IBOutlet UIStepper  *spaceSteper;
 @end
 
 @implementation ViewController
@@ -31,8 +33,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self createButtons];
-    [self.cusSwitch addTarget:self action:@selector(switchChanged:) forControlEvents:UIControlEventValueChanged];
+    self.navigationItem.title = @"demo";
+    [self configureUI:0];
 }
 
 - (void)configureUI:(NSInteger)tag {
@@ -41,7 +43,7 @@
     tr.type = @"cube";
     tr.subtype = kCATransitionFromRight;
     tr.duration = 0.25;
-    [self.animationView.layer addAnimation:tr forKey:nil];
+    [self.contentView.layer addAnimation:tr forKey:nil];
     
     self.view.backgroundColor = [UIColor whiteColor];
     if(self.carousel) {
@@ -50,43 +52,39 @@
         self.carousel = nil;
     }
     
-    self.animationView.backgroundColor = [UIColor whiteColor];
+    self.contentView.backgroundColor = [UIColor whiteColor];
     CWFlowLayout *flowLayout = [[CWFlowLayout alloc] initWithStyle:[self styleFromTag:tag]];
-    flowLayout.itemSpace_H = 30;
-//    /*
-//     使用frame创建视图
-//     */
-//    CWCarousel *carousel = [[CWCarousel alloc] initWithFrame:self.animationView.bounds
-//                                                    delegate:self
-//                                                  datasource:self
-//                                                  flowLayout:flowLayout];
-//    [self.animationView addSubview:carousel];
-    
+    flowLayout.itemSpace_H = 0;
+    self.spaceLab.text = @"0";
+    self.spaceSteper.value = 0;
+    if (flowLayout.style == CWCarouselStyle_H_3) {
+        flowLayout.itemSpace_H = -10;
+        self.spaceLab.text = @"-10";
+        self.spaceSteper.value = -10;
+    }
     // 使用layout创建视图(使用masonry 或者 系统api)
     CWCarousel *carousel = [[CWCarousel alloc] initWithFrame:CGRectZero
                                                     delegate:self
                                                   datasource:self
                                                   flowLayout:flowLayout];
     carousel.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.animationView addSubview:carousel];
+    [self.contentView addSubview:carousel];
     NSDictionary *dic = @{@"view" : carousel};
-    [self.animationView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[view]-0-|"
+    [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[view]-0-|"
                                                                                options:kNilOptions
                                                                                metrics:nil
                                                                                  views:dic]];
-    [self.animationView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[view]-0-|"
+    [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[view]-0-|"
                                                                                options:kNilOptions
                                                                                metrics:nil
                                                                                  views:dic]];
-    self.animationView.clipsToBounds = YES;
-    
-    carousel.isAuto = NO;
+    self.contentView.clipsToBounds = YES;
+    carousel.isAuto = self.autoSwitch.isOn;
     carousel.autoTimInterval = 2;
-    carousel.endless = YES;
+    carousel.endless = self.endlessSwitch.isOn;
     carousel.backgroundColor = [UIColor whiteColor];
-    
     /* 自定pageControl */
-    CGRect frame = self.animationView.bounds;
+    CGRect frame = self.contentView.bounds;
     if(self.openCustomPageControl) {
         CWPageControl *control = [[CWPageControl alloc] initWithFrame:CGRectMake(0, 0, 300, 20)];
         control.center = CGPointMake(CGRectGetWidth(frame) * 0.5, CGRectGetHeight(frame) - 10);
@@ -109,42 +107,8 @@
     [self.carousel controllerWillDisAppear];
 }
 
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    [self.carousel scrollTo:4 animation:NO];
-}
 
 #pragma mark - < 事件响应 >
-- (void)buttonClick:(UIButton *)sender {
-    static NSInteger tag = -1;
-    if(tag == sender.tag) {
-        return;
-    }
-    tag = sender.tag;
-    [self configureUI:tag];
-}
-- (void)switchChanged:(UISwitch *)switchSender {
-    self.openCustomPageControl = switchSender.on;
-    if (self.carousel)
-    {
-        [self configureUI:self.carousel.flowLayout.style - 1];
-    }
-}
-- (void)createButtons {
-    NSArray *titles = @[@"正常样式", @"横向滑动两边留白", @"横向滑动两边留白渐变效果", @"两边被遮挡效果"];
-    CGFloat height = 40;
-    dispatch_apply(4, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(size_t index) {
-        UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.view addSubview:button];
-            [button setTitle:titles[index] forState:UIControlStateNormal];
-            button.tag = index;
-            button.frame = CGRectMake(0, height * index + [UIApplication sharedApplication].statusBarFrame.size.height + self.navigationController.navigationBar.frame.size.height + 10, CGRectGetWidth(self.view.frame), height);
-            [button addTarget:self action:@selector(buttonClick:) forControlEvents:UIControlEventTouchUpInside];
-        });
-    });
-    [self.view addSubview:self.animationView];
-}
-
 - (CWCarouselStyle)styleFromTag:(NSInteger)tag {
     switch (tag) {
         case 0:
@@ -163,6 +127,26 @@
             return CWCarouselStyle_Unknow;
             break;
     }
+}
+
+- (IBAction)styleChanged:(UISegmentedControl *)sender {
+    [self configureUI:sender.selectedSegmentIndex];
+}
+
+- (IBAction)endlessChanged:(UISwitch *)sender {
+    self.carousel.endless = sender.isOn;
+    [self.carousel freshCarousel];
+}
+
+- (IBAction)autoChanged:(UISwitch *)sender {
+    self.carousel.isAuto = sender.isOn;
+    [self.carousel freshCarousel];
+}
+
+- (IBAction)spaceChanged:(UIStepper *)sender {
+    self.carousel.flowLayout.itemSpace_H = sender.value;
+    self.spaceLab.text = [NSString stringWithFormat:@"%.0f", sender.value];
+    [self.carousel freshCarousel];
 }
 
 #pragma mark - 网络层
@@ -184,7 +168,6 @@
 
 #pragma mark - Delegate
 - (NSInteger)numbersForCarousel {
-//    return kCount;
     return self.dataArr.count;
 }
 
@@ -196,13 +179,13 @@
         imgView = [[UIImageView alloc] initWithFrame:cell.contentView.bounds];
         imgView.tag = kViewTag;
         imgView.backgroundColor = [UIColor redColor];
+        imgView.contentMode = UIViewContentModeScaleAspectFill;
         [cell.contentView addSubview:imgView];
         cell.layer.masksToBounds = YES;
         cell.layer.cornerRadius = 8;
     }
 //    https://www.google.com/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwio8MyTp-DdAhWKM94KHUmEDcAQjRx6BAgBEAU&url=http%3A%2F%2F699pic.com%2Ftupian%2Fchuan.html&psig=AOvVaw20gpsPpW4JcNm0mJi9dYrb&ust=1538313533814128
     
-//    NSString *name = [NSString stringWithFormat:@"%02ld.jpg", index + 1];
     NSString *name = self.dataArr[index];
     UIImage *img = [UIImage imageNamed:name];
     if(!img) {
@@ -228,13 +211,6 @@
 
 
 #pragma mark - Setter && Getter
-- (UIView *)animationView{
-    if(!_animationView) {
-        self.animationView = [[UIView alloc] initWithFrame:CGRectMake(0, 250, CGRectGetWidth(self.view.frame), 230)];
-    }
-    return _animationView;
-}
-
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
