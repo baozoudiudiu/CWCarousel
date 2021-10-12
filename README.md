@@ -12,6 +12,7 @@
 oc版和swift是两份完全不同的代码，所以代码实现不尽相同。有些可能在其中一个版本实现了，但是另一个版本不一定来得及实现。请参照下面的版本记录自行了解：
 
 #### OC：版本记录
+![oc演示demo](https://github.com/baozoudiudiu/CWCarousel/blob/master/CWCarouselDemo/oc_demo.png?raw=true)
 
 | 版本号 | 更新内容 |
 | ------ | ------ |
