@@ -10,6 +10,7 @@
 #import "CWCarouselProtocol.h"
 #import "CWFlowLayout.h"
 
+@class CWCarouselCollectionView;
 @interface CWCarousel : UIView
 #pragma mark - < 相关属性 >
 
@@ -52,7 +53,7 @@
 /**
  实际的示轮播图内容的视图(其实就是基于collectionView实现的)
  */
-@property (nonatomic, strong, readonly) UICollectionView  * _Nonnull carouselView;
+@property (nonatomic, strong, readonly) CWCarouselCollectionView  * _Nonnull carouselView;
 
 
 /**
@@ -149,4 +150,20 @@
  轮播图所处控制器WillDisAppear方法里调用
  */
 - (void)controllerWillDisAppear;
+
+
+/// 滚动到指定下标
+/// @param index 指定下标
+/// @param animation 是否开启滚动动画
+- (void)scrollTo:(NSInteger)index animation:(BOOL)animation;
 @end
+
+
+
+
+
+
+@interface CWCarouselCollectionView: UICollectionView<UIGestureRecognizerDelegate>
+
+@end
+

@@ -28,11 +28,13 @@
 - (void)dealloc {
     NSLog(@"%s", __func__);
 }
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self createButtons];
     [self.cusSwitch addTarget:self action:@selector(switchChanged:) forControlEvents:UIControlEventValueChanged];
 }
+
 - (void)configureUI:(NSInteger)tag {
     self.dataArr = nil;
     CATransition *tr = [CATransition animation];
@@ -50,7 +52,7 @@
     
     self.animationView.backgroundColor = [UIColor whiteColor];
     CWFlowLayout *flowLayout = [[CWFlowLayout alloc] initWithStyle:[self styleFromTag:tag]];
-    
+    flowLayout.itemSpace_H = 30;
 //    /*
 //     使用frame创建视图
 //     */
@@ -78,13 +80,12 @@
                                                                                  views:dic]];
     self.animationView.clipsToBounds = YES;
     
-    carousel.isAuto = YES;
+    carousel.isAuto = NO;
     carousel.autoTimInterval = 2;
     carousel.endless = YES;
     carousel.backgroundColor = [UIColor whiteColor];
     
     /* 自定pageControl */
-    
     CGRect frame = self.animationView.bounds;
     if(self.openCustomPageControl) {
         CWPageControl *control = [[CWPageControl alloc] initWithFrame:CGRectMake(0, 0, 300, 20)];
@@ -107,6 +108,11 @@
     [super viewWillDisappear:animated];
     [self.carousel controllerWillDisAppear];
 }
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    [self.carousel scrollTo:4 animation:NO];
+}
+
 #pragma mark - < 事件响应 >
 - (void)buttonClick:(UIButton *)sender {
     static NSInteger tag = -1;
@@ -207,19 +213,21 @@
 }
 
 - (void)CWCarousel:(CWCarousel *)carousel didSelectedAtIndex:(NSInteger)index {
-    NSLog(@"...%ld...", (long)index);
+    
 }
 
 
 - (void)CWCarousel:(CWCarousel *)carousel didStartScrollAtIndex:(NSInteger)index indexPathRow:(NSInteger)indexPathRow {
-    NSLog(@"开始滑动: %ld", index);
+    
 }
 
 
 - (void)CWCarousel:(CWCarousel *)carousel didEndScrollAtIndex:(NSInteger)index indexPathRow:(NSInteger)indexPathRow {
-    NSLog(@"结束滑动: %ld", index);
+    
 }
 
+
+#pragma mark - Setter && Getter
 - (UIView *)animationView{
     if(!_animationView) {
         self.animationView = [[UIView alloc] initWithFrame:CGRectMake(0, 250, CGRectGetWidth(self.view.frame), 230)];
@@ -229,6 +237,5 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 @end

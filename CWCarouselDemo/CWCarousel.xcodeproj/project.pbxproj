@@ -16,6 +16,7 @@
 		28D8861D20F44EAE00BDED3D /* 01.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 28D8861820F44EAE00BDED3D /* 01.jpg */; };
 		6647FD98258E079A005A9547 /* CWBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6647FD96258E079A005A9547 /* CWBanner.swift */; };
 		6647FD99258E079A005A9547 /* CWSwiftFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6647FD97258E079A005A9547 /* CWSwiftFlowLayout.swift */; };
+		665B49FF271028C8006872EA /* TestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665B49FE271028C8006872EA /* TestController.swift */; };
 		666851A22073BBF900F91985 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 666851A12073BBF900F91985 /* AppDelegate.m */; };
 		666851A52073BBF900F91985 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 666851A42073BBF900F91985 /* ViewController.m */; };
 		666851A82073BBF900F91985 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 666851A62073BBF900F91985 /* Main.storyboard */; };
@@ -38,6 +39,7 @@
 		28D8861820F44EAE00BDED3D /* 01.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 01.jpg; sourceTree = "<group>"; };
 		6647FD96258E079A005A9547 /* CWBanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWBanner.swift; path = ../../../Swift_CWCarousel/CWBanner.swift; sourceTree = "<group>"; };
 		6647FD97258E079A005A9547 /* CWSwiftFlowLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWSwiftFlowLayout.swift; path = ../../../Swift_CWCarousel/CWSwiftFlowLayout.swift; sourceTree = "<group>"; };
+		665B49FE271028C8006872EA /* TestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestController.swift; sourceTree = "<group>"; };
 		6668519D2073BBF800F91985 /* CWCarousel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CWCarousel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		666851A02073BBF900F91985 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		666851A12073BBF900F91985 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -76,6 +78,7 @@
 				666851A42073BBF900F91985 /* ViewController.m */,
 				666851B92073BC8B00F91985 /* SViewController.swift */,
 				2826F4462101C3EE00BC32CB /* ShowViewController.swift */,
+				665B49FE271028C8006872EA /* TestController.swift */,
 			);
 			name = Viewcontrollers;
 			sourceTree = "<group>";
@@ -239,6 +242,7 @@
 				666851A52073BBF900F91985 /* ViewController.m in Sources */,
 				6680CED625A3368000707014 /* CWFlowLayout.m in Sources */,
 				666851B02073BBF900F91985 /* main.m in Sources */,
+				665B49FF271028C8006872EA /* TestController.swift in Sources */,
 				6647FD99258E079A005A9547 /* CWSwiftFlowLayout.swift in Sources */,
 				666851BA2073BC8B00F91985 /* SViewController.swift in Sources */,
 				2826F4472101C3EE00BC32CB /* ShowViewController.swift in Sources */,

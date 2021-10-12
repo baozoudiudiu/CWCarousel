@@ -8,6 +8,43 @@
 
 #import "CWCarousel.h"
 
+@interface CWCarouselCollectionView()
+@property (nonatomic, copy)  void (^ _Nullable tapCallback) (void);
+@end
+
+
+@implementation CWCarouselCollectionView
+- (instancetype)initWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewLayout *)layout {
+    if(self = [super initWithFrame:frame collectionViewLayout:layout]) {
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
+        [self addGestureRecognizer:tap];
+        tap.delegate = self;
+    }
+    return self;
+}
+
+- (void)tapAction:(UITapGestureRecognizer *)tap {
+    if (!self.tapCallback) {
+        return;
+    }
+    self.tapCallback();
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    
+    if ([gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]] == NO) {
+        return YES;
+    }
+    
+    if ([[touch view] isKindOfClass:[UICollectionView class]]) {
+        return YES;
+    }
+    
+    return NO;
+}
+@end
+
+
 @interface CWTempleteCell: UICollectionViewCell
 @end
 
@@ -19,10 +56,15 @@
 @interface CWCarousel ()<UICollectionViewDelegate, UICollectionViewDataSource> {
     
 }
-@property (nonatomic, strong) UICollectionView *carouselView;
+/// collectionView
+@property (nonatomic, strong) CWCarouselCollectionView *carouselView;
+/// 轮播总数
 @property (nonatomic, assign) NSInteger        numbers;
+/// 当前居中的业务逻辑下标
 @property (nonatomic, assign) NSInteger        currentIndex;
+/// 当前居中的实际下标
 @property (nonatomic, assign) NSInteger        infactIndex;
+/// (已经废弃)
 @property (nonatomic, assign) CGFloat          addHeight;
 /**
  自动播放是否暂停
@@ -41,12 +83,6 @@
 
 - (instancetype)initWithFrame:(CGRect)frame delegate:(id<CWCarouselDelegate>)delegate datasource:(id<CWCarouselDatasource>)datasource flowLayout:(CWFlowLayout *)flowLayout {
     CGFloat addHeight = 0;
-//    if(flowLayout.style == CWCarouselStyle_H_3) {
-//        /* 如果是CWCarouselStyle_H_3, 因为中间一张图片放大的原因,需要扩充一下frame的高度,所以会和实际的传入的frame
-//         的高度有部分偏差
-//         */
-//        addHeight = (flowLayout.maxScale - 1) * CGRectGetHeight(frame);
-//    }
     frame.size.height += addHeight;
     self.addHeight = addHeight;
     if(self = [super initWithFrame:frame]) {
@@ -57,9 +93,9 @@
         self.autoTimInterval = 3;
         self.endless = YES;
         [self configureView];
+        [self addNotify];
     }
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appBecomeInactive:) name:UIApplicationWillResignActiveNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
+    NSAssert(self != nil, @"CWCarousel 初始化失败!");
     return self;
 }
 
@@ -75,6 +111,7 @@
     if(self.isAuto) {
         [self resumePlay];
     }
+    [self addNotify];
     [self adjustErrorCell:YES];
 }
 
@@ -82,12 +119,22 @@
     if(self.isAuto) {
         [self pause];
     }
+    [self removeNotify];
     [self adjustErrorCell:YES];
 }
 
+- (void)addNotify {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appBecomeInactive:) name:UIApplicationWillResignActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
+}
+
+- (void)removeNotify {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
+}
+
 - (void)dealloc {
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [self removeNotify];
 }
 
 - (void)willMoveToSuperview:(UIView *)newSuperview {
@@ -119,25 +166,24 @@
 }
 
 - (void)freshCarousel {
-    if([self numbers] <= 0) {
+    
+    if([self numbers] < 0) {
         return;
     }
+    
     [self.carouselView reloadData];
-    [self.carouselView layoutIfNeeded];
+    [self layoutIfNeeded];
+    
     if (self.endless)
         [self.carouselView scrollToItemAtIndexPath:[self originIndexPath] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
-    else
-    {
-        if(self.flowLayout.style == CWCarouselStyle_Normal)
-        {
+    else {
+        if(self.flowLayout.style == CWCarouselStyle_Normal) {
             [self.carouselView scrollToItemAtIndexPath:self.currentIndexPath = [NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
         }
-        else
-        {
+        else {
             [self.carouselView scrollToItemAtIndexPath:self.currentIndexPath = [NSIndexPath indexPathForRow:1 inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
         }
     }
-    
     
     self.carouselView.userInteractionEnabled = YES;
     if (self.isAuto) {
@@ -163,31 +209,37 @@
 
 /// 将要结束拖拽
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
-    if (!self.endless)
+    
+    NSInteger num = [self numbers];
+    
+    if (num <= 0) {
+        return;
+    }
+    
+    if (self.endless == NO)
     {
-        NSInteger maxIndex = [self numbers] - 1;
+        // 非无限轮播
+        NSInteger maxIndex = num - 1;
         NSInteger minIndex = 0;
         if(self.flowLayout.style != CWCarouselStyle_Normal)
         {
+            // 后面有一个占位cell, 所以减2, 不是减1
             maxIndex = [self infactNumbers] - 2;
+            // 前面有一个占位cell, 所以下标是从1开始
             minIndex = 1;
         }
         if (velocity.x == 0) {
-            //还有一种情况,当滑动后手指按住不放,然后松开,此时的加速度其实是为0的
-            [self adjustErrorCell:NO];
-            if (@available(iOS 14.0, *)) {
-                // iOS14以前,就算加速度为0,后续系统会还是会走scrollViewWillBeginDecelerating:回调
-                // 但是iOS14以后,加速度为0时,不会在后续执行回调.这里手动触发一下
-                [self scrollViewWillBeginDecelerating:self.carouselView];
-            }
+            [self velocityZero];
             return;
         }
-        if (velocity.x >= 0 && self.currentIndexPath.row == maxIndex)
-        {
+        
+        if (velocity.x >= 0 && self.currentIndexPath.row == maxIndex) {
+            // 已经是最后一张了
             return;
         }
-        if (velocity.x <= 0 && self.currentIndexPath.row == minIndex)
-        {
+        
+        if (velocity.x <= 0 && self.currentIndexPath.row == minIndex) {
+            // 已经是第一张了
             return;
         }
     }
@@ -199,35 +251,48 @@
         //右滑,上一张
         self.currentIndexPath = [NSIndexPath indexPathForRow:self.currentIndexPath.row - 1 inSection:self.currentIndexPath.section];
     }else if (velocity.x == 0) {
-        //还有一种情况,当滑动后手指按住不放,然后松开,此时的加速度其实是为0的
-        [self adjustErrorCell:NO];
-        if (@available(iOS 14.0, *)) {
-            // iOS14以前,就算加速度为0,后续系统会还是会走scrollViewWillBeginDecelerating:回调
-            // 但是iOS14以后,加速度为0时,不会在后续执行回调.这里手动触发一下
-            [self scrollViewWillBeginDecelerating:self.carouselView];
-        }
+        [self velocityZero];
     }
 }
 
 /// 开始减速
 - (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
+    [self cusScrollViewWillBeginDecelerating:YES scroll:scrollView];
+}
+
+- (void)cusScrollViewWillBeginDecelerating:(BOOL)animation scroll:(UIScrollView *)scrollView{
     
-    if(self.currentIndexPath != nil &&
-       self.currentIndexPath.row < [self infactNumbers] &&
-       self.currentIndexPath.row >= 0) {
-        // 中间一张轮播,居中显示
-        if (!self.endless)
-        {
-            if (self.currentIndexPath.row == 0 && self.style != CWCarouselStyle_Normal)
-            {
-                self.currentIndexPath = [NSIndexPath indexPathForRow:1 inSection:self.currentIndexPath.section];
-            }
-            else if (self.currentIndexPath.row == [self infactNumbers] - 1 && self.style != CWCarouselStyle_Normal)
-            {
-                self.currentIndexPath = [NSIndexPath indexPathForRow:[self infactNumbers] - 2 inSection:self.currentIndexPath.section];
-            }
+    if (self.currentIndexPath == nil) {
+        return;
+    }
+    
+    if (self.currentIndexPath.row >= [self infactNumbers]) {
+        return;
+    }
+    
+    if (self.currentIndexPath.row < 0) {
+        return;
+    }
+    
+    // 中间一张轮播,居中显示
+    if (self.endless == NO)
+    {
+        // 非无限轮播, 非CWCarouselStyle_Normal样式下, 前后有两张占位cell, 这里需要处理一下.
+        if (self.currentIndexPath.row == 0 && self.style != CWCarouselStyle_Normal) {
+            
+            self.currentIndexPath = [NSIndexPath indexPathForRow:1 inSection:self.currentIndexPath.section];
+            
+        }else if (self.currentIndexPath.row == [self infactNumbers] - 1 && self.style != CWCarouselStyle_Normal) {
+            
+            self.currentIndexPath = [NSIndexPath indexPathForRow:[self infactNumbers] - 2 inSection:self.currentIndexPath.section];
+            
         }
-        [self.carouselView scrollToItemAtIndexPath:self.currentIndexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
+    }
+    
+    [self.carouselView scrollToItemAtIndexPath:self.currentIndexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:animation];
+    
+    if (animation == NO) {
+        [self cusScrollAnimationEnd:scrollView];
     }
 }
 
@@ -244,27 +309,23 @@
 /// 滚动动画完成
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
     
+    [self cusScrollAnimationEnd:scrollView];
+}
+
+- (void)cusScrollAnimationEnd:(UIScrollView *)scrollView {
     // 滚动完成,打开交互,关掉pagingEnabled
     // 为什么要关掉pagingEnabled呢,因为切换控制器的时候会有系统级bug,不信你试试.
     scrollView.userInteractionEnabled = YES;
     scrollView.pagingEnabled = NO;
+    
     if(self.isAuto) {
         [self play];
     }
-    if (self.endless)
+    
+    if (self.endless) {
         [self checkOutofBounds];
-    
-//    if(!self.endless)
-//    {
-//        CGFloat space = self.flowLayout.itemSpace_H + self.flowLayout.itemWidth * (1 - self.flowLayout.minScale) * 0.5;
-//        if(self.currentIndexPath.row == 0)
-//            self.carouselView.contentInset = UIEdgeInsetsMake(0, space, 0, 0);
-//        else if(self.currentIndexPath.row == [self numbers] - 1)
-//            self.carouselView.contentInset = UIEdgeInsetsMake(0, 0, 0, space);
-//        else
-//            self.carouselView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
-//    }
-    
+    }
+
     if (self.delegate && [self.delegate respondsToSelector:@selector(CWCarousel:didEndScrollAtIndex:indexPathRow:)]) {
         [self.delegate CWCarousel:self didEndScrollAtIndex:[self caculateIndex:self.currentIndexPath.row] indexPathRow:self.currentIndexPath.row];
     }
@@ -272,9 +333,9 @@
 
 // 滚动中
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    // 滚动过程中关闭交互
-//    scrollView.userInteractionEnabled = NO;
+    
 }
+
 #pragma mark - < Logic Helper >
 - (NSIndexPath *)originIndexPath {
     
@@ -283,44 +344,53 @@
         return [[NSIndexPath alloc] initWithIndex:0];
     }
     
-    NSInteger centerIndex = [self infactNumbers] / [self numbers];
-    
-    if (self.endless) {
-        if(centerIndex <= 1) {
-            if (centerIndex == 1) {
-                self.currentIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-            }else {
-                self.currentIndexPath = [NSIndexPath indexPathForRow:self.numbers inSection:0];
-            }
-        }else {
-            self.currentIndexPath = [NSIndexPath indexPathForRow:centerIndex / 2 * [self numbers] inSection:0];
-        }
-    }else {
+    if (self.endless == NO) {
         NSInteger row = self.flowLayout.style == CWCarouselStyle_Normal ? 0 : 1;
         self.currentIndexPath = [NSIndexPath indexPathForRow:row inSection:0];
+        return self.currentIndexPath;
     }
     
+    NSInteger centerIndex = [self infactNumbers] / num; //一共有多少组
+    
+    if (centerIndex == 0) {
+        // 异常, 一组都没有
+        NSAssert(true, @"计算起始下标异常, 分组不足一组.");
+        return self.currentIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    }
+    
+    if (centerIndex == 1) {
+        return self.currentIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    }
+        
+    // 取中间一组展示
+    self.currentIndexPath = [NSIndexPath indexPathForRow:centerIndex / 2 * num inSection:0];
     return self.currentIndexPath;
 }
 
+// 检测是否到了边界
 - (void)checkOutofBounds {
     if ([self numbers] <= 0) {return;}
+    
+    BOOL scroll = NO;
+    NSInteger index = self.currentIndex;
+    
     // 越界检查
     if(self.currentIndexPath.row == [self infactNumbers] - 1) {
-        //最后一张
-        NSIndexPath *origin = [self originIndexPath];
-        NSInteger index = [self caculateIndex:self.currentIndexPath.row] - 1;
-        self.currentIndexPath = [NSIndexPath indexPathForRow:origin.row + index inSection:origin.section];
-        [self.carouselView scrollToItemAtIndexPath:self.currentIndexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
-        self.carouselView.userInteractionEnabled = YES;
+        index = [self caculateIndex:self.currentIndexPath.row] - 1; //最后一张
+        scroll = YES;
     }else if(self.currentIndexPath.row == 0) {
-        //第一张
-        NSIndexPath *origin = [self originIndexPath];
-        NSInteger index = [self caculateIndex:self.currentIndexPath.row];
-        self.currentIndexPath = [NSIndexPath indexPathForRow:origin.row + index inSection:origin.section];
-        [self.carouselView scrollToItemAtIndexPath:self.currentIndexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
-        self.carouselView.userInteractionEnabled = YES;
+        index = [self caculateIndex:self.currentIndexPath.row]; //第一张
+        scroll = YES;
     }
+    
+    self.carouselView.userInteractionEnabled = YES;
+    if (scroll == NO) {
+        return;
+    }
+    
+    NSIndexPath *origin = [self originIndexPath];
+    self.currentIndexPath = [NSIndexPath indexPathForRow:origin.row + index inSection:origin.section];
+    [self.carouselView scrollToItemAtIndexPath:self.currentIndexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
 }
 
 - (void)pageControlClick:(UIPageControl *)sender {
@@ -353,12 +423,13 @@
  @return 业务需求下标
  */
 - (NSInteger)caculateIndex:(NSInteger)factIndex {
-    if (self.numbers <= 0) {
+    NSInteger num = [self numbers];
+    if (num <= 0) {
         return 0;
     }
-    NSInteger row = factIndex % [self numbers];
-    if(!self.endless && self.flowLayout.style != CWCarouselStyle_Normal)
-    {
+    NSInteger row = factIndex % num;
+    if(self.endless == NO && self.flowLayout.style != CWCarouselStyle_Normal) {
+        // 这种情况有占位cell
         row = factIndex % [self infactNumbers] - 1;
     }
     return row;
@@ -366,30 +437,28 @@
 
 - (void)adjustErrorCell:(BOOL)isScroll {
     NSArray <NSIndexPath *> *indexPaths = [self.carouselView indexPathsForVisibleItems];
-    NSMutableArray <UICollectionViewLayoutAttributes *> *attriArr = [NSMutableArray arrayWithCapacity:indexPaths.count];
-    [indexPaths enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        UICollectionViewLayoutAttributes *attri = [self.carouselView layoutAttributesForItemAtIndexPath:obj];
-        [attriArr addObject:attri];
-    }];
     CGFloat centerX = self.carouselView.contentOffset.x + CGRectGetWidth(self.carouselView.frame) * 0.5;
     __block CGFloat minSpace = MAXFLOAT;
-//    BOOL shouldSet = YES;
-//    if (self.flowLayout.style != CWCarouselStyle_Normal && indexPaths.count <= 2)
-//    {
-//        shouldSet = NO;
-//    }
-    [attriArr enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        obj.zIndex = 0;
-//        if(ABS(minSpace) > ABS(obj.center.x - centerX) && shouldSet) {
-//            minSpace = obj.center.x - centerX;
-//            self.currentIndexPath = obj.indexPath;
-//        }
-        if(ABS(minSpace) > ABS(obj.center.x - centerX)) {
-            minSpace = obj.center.x - centerX;
-            self.currentIndexPath = obj.indexPath;
+    [indexPaths enumerateObjectsUsingBlock:^(NSIndexPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        UICollectionViewLayoutAttributes *attri = [self.carouselView layoutAttributesForItemAtIndexPath:obj];
+        attri.zIndex = 0;
+        if(ABS(minSpace) > ABS(attri.center.x - centerX)) {
+            minSpace = attri.center.x - centerX;
+            self.currentIndexPath = attri.indexPath;
         }
     }];
     if(isScroll) {
+        [self scrollViewWillBeginDecelerating:self.carouselView];
+    }
+}
+
+/// velocity == 0时的处理
+- (void)velocityZero {
+    // 还有一种情况,当滑动后手指按住不放,然后松开,此时的加速度其实是为0的
+    [self adjustErrorCell:NO];
+    if (@available(iOS 14.0, *)) {
+        // iOS14以前,就算加速度为0,后续系统会还是会走scrollViewWillBeginDecelerating:回调
+        // 但是iOS14以后,加速度为0时,不会在后续执行回调.这里手动触发一下
         [self scrollViewWillBeginDecelerating:self.carouselView];
     }
 }
@@ -445,6 +514,20 @@
     [self stop];
 }
 
+- (void)scrollTo:(NSInteger)index animation:(BOOL)animation {
+    
+    if (index < 0 || index >= [self numbers]) {
+        // 防止越界
+        return;
+    }
+    
+    [self stop];
+    
+    NSIndexPath *origin = [self originIndexPath];
+    self.currentIndexPath = [NSIndexPath indexPathForRow:origin.row + index inSection:0];
+    [self cusScrollViewWillBeginDecelerating:animation scroll:self.carouselView];
+}
+
 #pragma mark - < Configure View>
 - (void)configureView {
     self.backgroundColor = [UIColor blackColor];
@@ -455,32 +538,36 @@
 
 #pragma mark - < Delegate, Datasource >
 - (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
-    if(!self.endless
-       && self.flowLayout.style != CWCarouselStyle_Normal
-       && (indexPath.row == 0 || indexPath.row == [self infactNumbers] - 1))
-    {
-        // 添加占位cell
+        
+    __weak __typeof(&*self) weakSelf = self;
+    
+    UICollectionViewCell* (^returnCell)(NSIndexPath *) = ^UICollectionViewCell* (NSIndexPath *idx) {
+        if (self.datasource && [self.datasource respondsToSelector:@selector(viewForCarousel:indexPath:index:)]) {
+            UICollectionViewCell *cell = [weakSelf.datasource viewForCarousel:weakSelf indexPath:indexPath index:[weakSelf caculateIndex:indexPath.row]];
+            return cell;
+        }
+        return nil;
+    };
+    
+    
+    if (self.endless) {
+        return returnCell(indexPath);
+    }
+    
+    if (self.flowLayout.style != CWCarouselStyle_Normal
+        && (indexPath.row == 0 || indexPath.row == [self infactNumbers] - 1)) {
+        // 非无限轮播情况下, "第一个"和"最后一个"是占位cell
         UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"tempCell" forIndexPath:indexPath];
         cell.contentView.backgroundColor = [UIColor clearColor];
         return cell;
     }
-    else
-    {
-        if(self.datasource &&
-           [self.datasource respondsToSelector:@selector(viewForCarousel:indexPath:index:)])
-        {
-            UICollectionViewCell *cell = [self.datasource viewForCarousel:self indexPath:indexPath index:[self caculateIndex:indexPath.row]];
-            return cell;
-        }
-        return nil;
-    }
+    
+    return returnCell(indexPath);
+    
 }
 
 - (NSInteger)collectionView:(nonnull UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    if([self numbers] > 0)
-        return [self infactNumbers];
-    else
-        return 0;
+    return [self infactNumbers];
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -498,8 +585,14 @@
     self.carouselView.backgroundColor = backgroundColor;
     [super setBackgroundColor:backgroundColor];
 }
+
 - (void)setCurrentIndexPath:(NSIndexPath *)currentIndexPath {
     _currentIndexPath = currentIndexPath;
+    
+    if (_currentIndexPath) {
+        self.currentIndex = [self caculateIndex:_currentIndexPath.row];
+    }
+
     if(self.customPageControl == nil)
         self.pageControl.currentPage = [self caculateIndex:currentIndexPath.row];
     else
@@ -507,17 +600,28 @@
 }
 
 - (void)setEndless:(BOOL)endless {
-    if(_endless != endless)
-    {
+    if(_endless != endless) {
         _endless = endless;
+    }
+}
+
+- (void)setCustomPageControl:(UIView<CWCarouselPageControlProtocol> *)customPageControl {
+    _customPageControl = customPageControl;
+    if(_customPageControl && _customPageControl.superview == nil)
+    {
+        [self addSubview:_customPageControl];
+        [self bringSubviewToFront:_customPageControl];
+        if(self.pageControl.superview == _customPageControl.superview)
+        {
+            [self.pageControl removeFromSuperview];
+        }
     }
 }
 
 #pragma mark - < getter >
 - (UICollectionView *)carouselView {
     if(!_carouselView) {
-//        self.carouselView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, self.addHeight * 0.5, self.frame.size.width, self.frame.size.height - self.addHeight) collectionViewLayout:self.flowLayout];
-        self.carouselView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:self.flowLayout];
+        self.carouselView = [[CWCarouselCollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:self.flowLayout];
         _carouselView.clipsToBounds = NO;
         _carouselView.delegate = self;
         _carouselView.dataSource = self;
@@ -539,14 +643,18 @@
                                                                      options:kNilOptions
                                                                      metrics:margins
                                                                        views:views]];
+        
+        __weak __typeof(&*self) weakSelf = self;
+        [_carouselView setTapCallback:^{
+            [weakSelf adjustErrorCell:YES];
+        }];
     }
     return _carouselView;
 }
 
 
 - (CWCarouselStyle)style {
-    if(self.flowLayout)
-    {
+    if(self.flowLayout) {
         return self.flowLayout.style;
     }
     return CWCarouselStyle_Unknow;
@@ -562,7 +670,7 @@
     if(self.datasource &&
        [self.datasource respondsToSelector:@selector(numbersForCarousel)]) {
         self.pageControl.numberOfPages = [self.datasource numbersForCarousel];
-        return self.pageControl.numberOfPages;
+        return [self.datasource numbersForCarousel];
     }
     return 0;
 }
@@ -576,37 +684,33 @@
     
     NSInteger num = [self numbers];
     
-    if ( 0 >= num) {
+    if ( num <= 0) {
         return 0;
     }
 
     [self.carouselView setScrollEnabled:YES];
     
-    if (self.endless)
-    {
-        if (num < 1) {
+    if (self.endless) {
+        // 无限轮播
+        if (num == 1) {
+            // 只有一张, 不让滚动
             [self.carouselView setScrollEnabled:NO];
             return num;
         }
-        // 如果是无限轮播,默认加载300个
+        // 不止一张, 默认加载300个 (cell有复用机制, 不用担心)
         return 300;
     }
-    else
-    {
-        // 如果不是无限轮播,出了第一种样式,其他的样式要加2个占位空cell
-        if(self.flowLayout.style == CWCarouselStyle_Normal)
-        {
-            return [self numbers];
-        }
-        else
-        {
-            if (num == 1) {
-                [self.carouselView setScrollEnabled:NO];
-            }
-            // 前后2个占位cell,所以+2
-            return [self numbers] + 2;
-        }
+    
+    // 非无限轮播, 除了第一种样式, 其他的样式要加2个占位空cell
+    if(self.flowLayout.style == CWCarouselStyle_Normal) {
+        return num;
     }
+    
+    if (num == 1) {
+        [self.carouselView setScrollEnabled:NO];
+    }
+    // 前后2个占位cell,所以+2
+    return num + 2;
 }
 
 - (UIPageControl *)pageControl {
@@ -626,20 +730,8 @@
 - (NSString *)version {
     return @"1.1.7";
 }
-
-#pragma mark - Setter
-- (void)setCustomPageControl:(UIView<CWCarouselPageControlProtocol> *)customPageControl {
-    _customPageControl = customPageControl;
-    if(_customPageControl && _customPageControl.superview == nil)
-    {
-        [self addSubview:_customPageControl];
-        [self bringSubviewToFront:_customPageControl];
-        if(self.pageControl.superview == _customPageControl.superview)
-        {
-            [self.pageControl removeFromSuperview];
-        }
-    }
-}
 @end
+
+
 
 
