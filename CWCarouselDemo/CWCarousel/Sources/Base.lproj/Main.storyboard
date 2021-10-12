@@ -234,7 +234,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tvv-9f-qA7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1326" y="832"/>
+            <point key="canvasLocation" x="220" y="1522"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="76d-tv-PRs">
@@ -249,12 +249,11 @@
                     <connections>
                         <segue destination="poD-cd-ett" kind="relationship" relationship="viewControllers" id="dLv-d5-rpF"/>
                         <segue destination="tZf-8P-kKD" kind="relationship" relationship="viewControllers" id="eaP-j5-fut"/>
-                        <segue destination="LD1-cT-xj2" kind="relationship" relationship="viewControllers" id="78V-2N-o9s"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ocz-fj-EdL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-184" y="116.94152923538232"/>
+            <point key="canvasLocation" x="-458" y="-42"/>
         </scene>
         <!--Item-->
         <scene sceneID="UuW-xB-q6y">
@@ -273,13 +272,13 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GtF-wn-VOy" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-258" y="822"/>
+            <point key="canvasLocation" x="-457" y="822"/>
         </scene>
         <!--switf-->
         <scene sceneID="WbV-Wb-oOL">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="tZf-8P-kKD" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="switf" id="eOA-Cb-vzd"/>
+                    <tabBarItem key="tabBarItem" title="switf" image="swift" catalog="system" id="eOA-Cb-vzd"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="doO-nT-9Xq">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -292,13 +291,13 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HWB-aI-vvN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="770" y="832"/>
+            <point key="canvasLocation" x="220" y="822"/>
         </scene>
         <!--oc-->
         <scene sceneID="unc-5E-eSW">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="poD-cd-ett" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="oc" image="00.square" catalog="system" id="RqU-IP-9pf">
+                    <tabBarItem key="tabBarItem" title="oc" image="00.circle" catalog="system" id="RqU-IP-9pf">
                         <color key="badgeColor" red="0.55634254220000001" green="0.97934550050000002" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </tabBarItem>
                     <toolbarItems/>
@@ -317,7 +316,8 @@
         </scene>
     </scenes>
     <resources>
-        <image name="00.square" catalog="system" width="128" height="114"/>
+        <image name="00.circle" catalog="system" width="128" height="121"/>
+        <image name="swift" catalog="system" width="128" height="113"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
