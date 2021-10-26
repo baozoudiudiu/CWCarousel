@@ -42,6 +42,10 @@
     
     return NO;
 }
+
+- (void)dealloc {
+    NSLog(@"[CWCarouselCollectionView dealloc]");
+}
 @end
 
 
@@ -51,6 +55,27 @@
 @implementation CWTempleteCell
 @end
 
+
+@interface MyProxy : NSProxy
+@property (nonatomic, weak) id _Nullable target;
+- (instancetype)init:(id)target;
+@end
+
+@implementation MyProxy
+- (instancetype)init:(id)target {
+    self.target = target;
+    return self;
+}
+
+- (NSMethodSignature *)methodSignatureForSelector:(SEL)sel {
+    return [self.target methodSignatureForSelector:sel];
+}
+
+- (void)forwardInvocation:(NSInvocation *)invocation {
+    [invocation invokeWithTarget:self.target];
+}
+
+@end
 
 
 @interface CWCarousel ()<UICollectionViewDelegate, UICollectionViewDataSource> {
@@ -75,6 +100,9 @@
  当前展示在中间的cell下标
  */
 @property (nonatomic, strong) NSIndexPath      *currentIndexPath;
+
+@property (nonatomic, strong) MyProxy          *timerProxy;
+@property (nonatomic, strong) NSTimer          *timer;
 
 @end
 @implementation CWCarousel
@@ -134,7 +162,9 @@
 }
 
 - (void)dealloc {
+    NSLog(@"[CWCarousel dealloc]");
     [self removeNotify];
+    [self releaseTimer];
 }
 
 - (void)willMoveToSuperview:(UIView *)newSuperview {
@@ -427,11 +457,16 @@
 }
 
 - (void)play {
-    [self stop];
     if(self.isPause) {
         return;
     }
-    [self performSelector:@selector(nextCell) withObject:nil afterDelay:self.autoTimInterval];
+    if (self.timer) {
+        [self resumePlay];
+        return;
+    }
+    self.timer = [NSTimer timerWithTimeInterval:self.autoTimInterval target:self.timerProxy selector:@selector(nextCell) userInfo:nil repeats:YES];
+    [self.timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:self.autoTimInterval]];
+    [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
 }
 
 - (void)nextCell {
@@ -461,16 +496,21 @@
         [self.carouselView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
         self.currentIndexPath = indexPath;
     }
-    [self performSelector:@selector(nextCell) withObject:nil afterDelay:self.autoTimInterval];
+//    [self performSelector:@selector(nextCell) withObject:nil afterDelay:self.autoTimInterval];
 }
 
 - (void)stop {
-    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(nextCell) object:nil];
-    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+//    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(nextCell) object:nil];
+//    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+    [self.timer setFireDate:[NSDate distantFuture]];
 }
 
 - (void)resumePlay {
     self.isPause = NO;
+    if (self.timer) {
+        [self.timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:self.autoTimInterval]];
+        return;
+    }
     [self play];
 }
 
@@ -480,7 +520,10 @@
 }
 
 - (void)releaseTimer {
-    [self stop];
+//    [self stop];
+    [self.timer setFireDate:[NSDate distantFuture]];
+    [self.timer invalidate];
+    self.timer = nil;
 }
 
 - (void)scrollTo:(NSInteger)index animation:(BOOL)animation {
@@ -728,6 +771,13 @@
         _pageControl.userInteractionEnabled = NO;
     }
     return _pageControl;
+}
+
+- (MyProxy *)timerProxy {
+    if (!_timerProxy) {
+        self.timerProxy = [[MyProxy alloc] init:self];
+    }
+    return _timerProxy;
 }
 
 - (NSString *)version {
