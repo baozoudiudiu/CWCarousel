@@ -249,6 +249,7 @@
                     <connections>
                         <segue destination="poD-cd-ett" kind="relationship" relationship="viewControllers" id="dLv-d5-rpF"/>
                         <segue destination="tZf-8P-kKD" kind="relationship" relationship="viewControllers" id="eaP-j5-fut"/>
+                        <segue destination="LD1-cT-xj2" kind="relationship" relationship="viewControllers" id="XFJ-2O-Yjw"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ocz-fj-EdL" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -272,7 +273,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GtF-wn-VOy" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-457" y="822"/>
+            <point key="canvasLocation" x="-458" y="822"/>
         </scene>
         <!--switf-->
         <scene sceneID="WbV-Wb-oOL">

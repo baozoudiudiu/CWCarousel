@@ -78,7 +78,6 @@
                                                                                options:kNilOptions
                                                                                metrics:nil
                                                                                  views:dic]];
-    self.contentView.clipsToBounds = YES;
     carousel.isAuto = self.autoSwitch.isOn;
     carousel.autoTimInterval = 2;
     carousel.endless = self.endlessSwitch.isOn;

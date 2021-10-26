@@ -139,8 +139,7 @@
 
 - (void)willMoveToSuperview:(UIView *)newSuperview {
     [super willMoveToSuperview:newSuperview];
-    newSuperview.clipsToBounds = NO;
-    [self configurePageControl];
+//    [self configurePageControl];
 }
 
 - (void)registerViewClass:(Class)viewClass identifier:(NSString *)identifier {
@@ -625,7 +624,6 @@
 - (UICollectionView *)carouselView {
     if(!_carouselView) {
         self.carouselView = [[CWCarouselCollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:self.flowLayout];
-        _carouselView.clipsToBounds = NO;
         _carouselView.delegate = self;
         _carouselView.dataSource = self;
         _carouselView.translatesAutoresizingMaskIntoConstraints = NO;
