@@ -16,6 +16,7 @@ oc版和swift是两份完全不同的代码，所以代码实现不尽相同。�
 
 | 版本号 | 更新内容 |
 | ------ | ------ |
+| 1.1.9 | 1、采用 NSTimer + NSProxy方式实现自动轮播，外部可以无需再手动调用releaseTimer方法来释放内存了。<br /> 2、优化了scrollToIndex内部实现 <br /> 3、修改pageControl布局代理的触发逻辑 |
 | 1.1.8 | 1. 代码重构。<br />2. 计算间距算法修改，更好更简单的设置间距。<br />3. 新增代理回调：`- (void)CWCarousel:(CWCarousel*)carousel addPageControl:(UIView* )pageControl;`可以在该回调中自定义布局pageControl。<br />4. 新增滚动到指定位置方法：`- (void*scrollTo:(NSInteger)index animation:(BOOL)animation`;。<br />5. 废弃了`maxScale`属性。<br />6.优化了自定义pageControl的实现。<br />7.修改了演示demo首页样式和逻辑。 |
 | 1.1.7 | 适配iOS14 感谢[milletZZ](https://github.com/milletZZ) |
 | 1.1.5 | 1.新增了2个代理回调<br/>2.点击事件代理回调逻辑优化 |
