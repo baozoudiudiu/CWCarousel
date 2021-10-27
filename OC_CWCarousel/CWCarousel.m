@@ -169,7 +169,16 @@
 
 - (void)willMoveToSuperview:(UIView *)newSuperview {
     [super willMoveToSuperview:newSuperview];
-//    [self configurePageControl];
+    if (nil == self.customPageControl && nil == self.pageControl.superview) {
+        [self configurePageControl];
+    }
+}
+
+- (void)willMoveToWindow:(UIWindow *)newWindow {
+    [super willMoveToWindow:newWindow];
+    if (nil == self.customPageControl && nil == self.pageControl.superview) {
+        [self configurePageControl];
+    }
 }
 
 - (void)registerViewClass:(Class)viewClass identifier:(NSString *)identifier {
@@ -496,12 +505,9 @@
         [self.carouselView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
         self.currentIndexPath = indexPath;
     }
-//    [self performSelector:@selector(nextCell) withObject:nil afterDelay:self.autoTimInterval];
 }
 
 - (void)stop {
-//    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(nextCell) object:nil];
-//    [NSObject cancelPreviousPerformRequestsWithTarget:self];
     [self.timer setFireDate:[NSDate distantFuture]];
 }
 
@@ -541,18 +547,16 @@
 }
 
 - (void)configurePageControl {
-    UIView *control = nil;
+    UIView *control = self.customPageControl;
+    BOOL isDefault = NO;
     
-    if (self.customPageControl
-        && [self.customPageControl isKindOfClass:[UIView class]]) {
-        
-        control = self.customPageControl;
-    }else {
+    if (nil == control || NO == [control isKindOfClass:[UIView class]]) {
         control = self.pageControl;
+        isDefault = YES;
     }
     
-    if (self.delegate && [self.delegate respondsToSelector:@selector(CWCarousel:addPageControl:)]) {
-        [self.delegate CWCarousel:self addPageControl:control];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(CWCarousel:addPageControl:isDefault:)]) {
+        [self.delegate CWCarousel:self addPageControl:control isDefault:isDefault];
         return;
     }
     
@@ -658,9 +662,7 @@
         self.pageControl = nil;
     }
     
-    if (self.superview) {
-        [self configurePageControl];
-    }
+    [self configurePageControl];
 }
 
 #pragma mark - < getter >
@@ -781,7 +783,7 @@
 }
 
 - (NSString *)version {
-    return @"1.1.8";
+    return @"1.1.9";
 }
 @end
 
