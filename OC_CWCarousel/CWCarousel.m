@@ -42,6 +42,10 @@
     
     return NO;
 }
+
+- (void)dealloc {
+    NSLog(@"[CWCarouselCollectionView dealloc]");
+}
 @end
 
 
@@ -51,6 +55,27 @@
 @implementation CWTempleteCell
 @end
 
+
+@interface MyProxy : NSProxy
+@property (nonatomic, weak) id _Nullable target;
+- (instancetype)init:(id)target;
+@end
+
+@implementation MyProxy
+- (instancetype)init:(id)target {
+    self.target = target;
+    return self;
+}
+
+- (NSMethodSignature *)methodSignatureForSelector:(SEL)sel {
+    return [self.target methodSignatureForSelector:sel];
+}
+
+- (void)forwardInvocation:(NSInvocation *)invocation {
+    [invocation invokeWithTarget:self.target];
+}
+
+@end
 
 
 @interface CWCarousel ()<UICollectionViewDelegate, UICollectionViewDataSource> {
@@ -75,6 +100,9 @@
  当前展示在中间的cell下标
  */
 @property (nonatomic, strong) NSIndexPath      *currentIndexPath;
+
+@property (nonatomic, strong) MyProxy          *timerProxy;
+@property (nonatomic, strong) NSTimer          *timer;
 
 @end
 @implementation CWCarousel
@@ -134,13 +162,23 @@
 }
 
 - (void)dealloc {
+    NSLog(@"[CWCarousel dealloc]");
     [self removeNotify];
+    [self releaseTimer];
 }
 
 - (void)willMoveToSuperview:(UIView *)newSuperview {
     [super willMoveToSuperview:newSuperview];
-    newSuperview.clipsToBounds = NO;
-    [self configurePageControl];
+    if (nil == self.customPageControl && nil == self.pageControl.superview) {
+        [self configurePageControl];
+    }
+}
+
+- (void)willMoveToWindow:(UIWindow *)newWindow {
+    [super willMoveToWindow:newWindow];
+    if (nil == self.customPageControl && nil == self.pageControl.superview) {
+        [self configurePageControl];
+    }
 }
 
 - (void)registerViewClass:(Class)viewClass identifier:(NSString *)identifier {
@@ -428,11 +466,21 @@
 }
 
 - (void)play {
-    [self stop];
     if(self.isPause) {
         return;
     }
-    [self performSelector:@selector(nextCell) withObject:nil afterDelay:self.autoTimInterval];
+    
+    if (NO == self.isAuto) {
+        return;
+    }
+    
+    if (self.timer) {
+        [self resumePlay];
+        return;
+    }
+    self.timer = [NSTimer timerWithTimeInterval:self.autoTimInterval target:self.timerProxy selector:@selector(nextCell) userInfo:nil repeats:YES];
+    [self.timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:self.autoTimInterval]];
+    [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
 }
 
 - (void)nextCell {
@@ -462,16 +510,21 @@
         [self.carouselView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
         self.currentIndexPath = indexPath;
     }
-    [self performSelector:@selector(nextCell) withObject:nil afterDelay:self.autoTimInterval];
 }
 
 - (void)stop {
-    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(nextCell) object:nil];
-    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+    if (!self.timer) {
+        return;
+    }
+    [self.timer setFireDate:[NSDate distantFuture]];
 }
 
 - (void)resumePlay {
     self.isPause = NO;
+    if (self.timer) {
+        [self.timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:self.autoTimInterval]];
+        return;
+    }
     [self play];
 }
 
@@ -481,7 +534,13 @@
 }
 
 - (void)releaseTimer {
-    [self stop];
+//    [self stop];
+    if (!self.timer) {
+        return;
+    }
+    [self.timer setFireDate:[NSDate distantFuture]];
+    [self.timer invalidate];
+    self.timer = nil;
 }
 
 - (void)scrollTo:(NSInteger)index animation:(BOOL)animation {
@@ -492,25 +551,27 @@
     }
     
     [self stop];
+
+    if (index == self.currentIndex) {
+        [self play];
+        return;
+    }
     
-    NSIndexPath *origin = [self originIndexPath];
-    self.currentIndexPath = [NSIndexPath indexPathForRow:origin.row + index inSection:0];
+    self.currentIndexPath = [NSIndexPath indexPathForRow:self.currentIndexPath.row + (index - self.currentIndex) inSection:0];
     [self cusScrollViewWillBeginDecelerating:animation scroll:self.carouselView];
 }
 
 - (void)configurePageControl {
-    UIView *control = nil;
+    UIView *control = self.customPageControl;
+    BOOL isDefault = NO;
     
-    if (self.customPageControl
-        && [self.customPageControl isKindOfClass:[UIView class]]) {
-        
-        control = self.customPageControl;
-    }else {
+    if (nil == control || NO == [control isKindOfClass:[UIView class]]) {
         control = self.pageControl;
+        isDefault = YES;
     }
     
-    if (self.delegate && [self.delegate respondsToSelector:@selector(CWCarousel:addPageControl:)]) {
-        [self.delegate CWCarousel:self addPageControl:control];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(CWCarousel:addPageControl:isDefault:)]) {
+        [self.delegate CWCarousel:self addPageControl:control isDefault:isDefault];
         return;
     }
     
@@ -616,16 +677,13 @@
         self.pageControl = nil;
     }
     
-    if (self.superview) {
-        [self configurePageControl];
-    }
+    [self configurePageControl];
 }
 
 #pragma mark - < getter >
 - (UICollectionView *)carouselView {
     if(!_carouselView) {
         self.carouselView = [[CWCarouselCollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:self.flowLayout];
-        _carouselView.clipsToBounds = NO;
         _carouselView.delegate = self;
         _carouselView.dataSource = self;
         _carouselView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -732,8 +790,15 @@
     return _pageControl;
 }
 
+- (MyProxy *)timerProxy {
+    if (!_timerProxy) {
+        self.timerProxy = [[MyProxy alloc] init:self];
+    }
+    return _timerProxy;
+}
+
 - (NSString *)version {
-    return @"1.1.8";
+    return @"1.1.9";
 }
 @end
 

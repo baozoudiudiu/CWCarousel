@@ -48,7 +48,6 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     if(self.carousel) {
-        [self.carousel releaseTimer];
         [self.carousel removeFromSuperview];
         self.carousel = nil;
     }
@@ -67,6 +66,10 @@
                                                     delegate:self
                                                   datasource:self
                                                   flowLayout:flowLayout];
+    self.carousel = carousel;
+    if (self.cusPageControlSwitch.isOn) {
+        [self setPageControl];
+    }
     carousel.translatesAutoresizingMaskIntoConstraints = NO;
     [self.contentView addSubview:carousel];
     NSDictionary *dic = @{@"view" : carousel};
@@ -78,18 +81,11 @@
                                                                                options:kNilOptions
                                                                                metrics:nil
                                                                                  views:dic]];
-    self.contentView.clipsToBounds = YES;
     carousel.isAuto = self.autoSwitch.isOn;
     carousel.autoTimInterval = 2;
     carousel.endless = self.endlessSwitch.isOn;
     carousel.backgroundColor = [UIColor whiteColor];
     [carousel registerViewClass:[UICollectionViewCell class] identifier:@"cellId"];
-    self.carousel = carousel;
-    
-    if (self.cusPageControlSwitch.isOn) {
-        [self setPageControl];
-    }
-    
     [self requestNetworkData];
 }
 

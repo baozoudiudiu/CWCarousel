@@ -40,16 +40,20 @@
  */
 - (void)CWCarousel:(CWCarousel *)carousel didEndScrollAtIndex:(NSInteger)index indexPathRow:(NSInteger)indexPathRow;
 
-/**
- 开始布局pageControl时会触发该回调
-    -- 当没有实现customPageControl时, pageControl为默认的pageControl
-    -- 当实现了customPageControl时, pageControl为自定义的pageControl
- 
- 可以在这个回调中自定义pageControl的布局, 如果没有实现该回调, 将默认在底部居中.
- 注意:
-    -- 当自定义的pageControl宽度布局不是自己撑开的时候, 请在该回调中自己布局. 否则采用默认的布局将不可见.
- */
-- (void)CWCarousel:(CWCarousel *)carousel addPageControl:(UIView *)pageControl;
+
+/// 开始布局pageControl时会触发该回调
+/// @param carousel 轮播组件对象
+/// @param pageControl pageControl对象
+/// @param isDefault YES: 组件内部默认的UIPageControl, NO: 自定义的customPageControl
+///
+/// 可以在这个回调中自定义pageControl的布局, 如果没有实现该回调, 将默认在底部居中.
+///
+/// 注意:
+/// 1. 先设置customPageControl, 后将CWCarousel添加到父视图中, 此回调只会被调用一次.
+/// 2. 先将CWCarousel添加到父视图中, 后设置customPageControl, 此回调会被调用两次, 第一次isDefault = YES, 第二次isDefault = NO. 因为将CWCarousel添加到父视图时检测到没有customPageControl, 组件内部并不清楚外部调用者是否会设置customPageControl, 会先创建并添加默认的pageControl.
+/// 3. 当自定义的customPageControl宽度布局不是自己撑开的时候, 请在该回调中自己布局. 否则采用默认的布局将不可见.
+- (void)CWCarousel:(CWCarousel *)carousel addPageControl:(UIView *)pageControl isDefault:(BOOL)isDefault;
+
 @end
 
 @protocol CWCarouselDatasource<NSObject>
