@@ -469,6 +469,11 @@
     if(self.isPause) {
         return;
     }
+    
+    if (NO == self.isAuto) {
+        return;
+    }
+    
     if (self.timer) {
         [self resumePlay];
         return;
@@ -508,6 +513,9 @@
 }
 
 - (void)stop {
+    if (!self.timer) {
+        return;
+    }
     [self.timer setFireDate:[NSDate distantFuture]];
 }
 
@@ -527,6 +535,9 @@
 
 - (void)releaseTimer {
 //    [self stop];
+    if (!self.timer) {
+        return;
+    }
     [self.timer setFireDate:[NSDate distantFuture]];
     [self.timer invalidate];
     self.timer = nil;
@@ -540,9 +551,13 @@
     }
     
     [self stop];
+
+    if (index == self.currentIndex) {
+        [self play];
+        return;
+    }
     
-    NSIndexPath *origin = [self originIndexPath];
-    self.currentIndexPath = [NSIndexPath indexPathForRow:origin.row + index inSection:0];
+    self.currentIndexPath = [NSIndexPath indexPathForRow:self.currentIndexPath.row + (index - self.currentIndex) inSection:0];
     [self cusScrollViewWillBeginDecelerating:animation scroll:self.carouselView];
 }
 
