@@ -16,6 +16,7 @@
 		28D8861D20F44EAE00BDED3D /* 01.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 28D8861820F44EAE00BDED3D /* 01.jpg */; };
 		6647FD98258E079A005A9547 /* CWBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6647FD96258E079A005A9547 /* CWBanner.swift */; };
 		6647FD99258E079A005A9547 /* CWSwiftFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6647FD97258E079A005A9547 /* CWSwiftFlowLayout.swift */; };
+		6648C317272A719B00DD47AF /* CWProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6648C316272A719B00DD47AF /* CWProxy.swift */; };
 		665B49FF271028C8006872EA /* TestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665B49FE271028C8006872EA /* TestController.swift */; };
 		666851A22073BBF900F91985 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 666851A12073BBF900F91985 /* AppDelegate.m */; };
 		666851A52073BBF900F91985 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 666851A42073BBF900F91985 /* ViewController.m */; };
@@ -39,6 +40,7 @@
 		28D8861820F44EAE00BDED3D /* 01.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 01.jpg; sourceTree = "<group>"; };
 		6647FD96258E079A005A9547 /* CWBanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWBanner.swift; path = ../../../Swift_CWCarousel/CWBanner.swift; sourceTree = "<group>"; };
 		6647FD97258E079A005A9547 /* CWSwiftFlowLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWSwiftFlowLayout.swift; path = ../../../Swift_CWCarousel/CWSwiftFlowLayout.swift; sourceTree = "<group>"; };
+		6648C316272A719B00DD47AF /* CWProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CWProxy.swift; sourceTree = "<group>"; };
 		665B49FE271028C8006872EA /* TestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestController.swift; sourceTree = "<group>"; };
 		6668519D2073BBF800F91985 /* CWCarousel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CWCarousel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		666851A02073BBF900F91985 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -138,6 +140,7 @@
 		666851B72073BC0C00F91985 /* Swift */ = {
 			isa = PBXGroup;
 			children = (
+				6648C316272A719B00DD47AF /* CWProxy.swift */,
 				6647FD96258E079A005A9547 /* CWBanner.swift */,
 				6647FD97258E079A005A9547 /* CWSwiftFlowLayout.swift */,
 				666851B82073BC8A00F91985 /* CWCarousel-Bridging-Header.h */,
@@ -239,6 +242,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6648C317272A719B00DD47AF /* CWProxy.swift in Sources */,
 				666851A52073BBF900F91985 /* ViewController.m in Sources */,
 				6680CED625A3368000707014 /* CWFlowLayout.m in Sources */,
 				666851B02073BBF900F91985 /* main.m in Sources */,

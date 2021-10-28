@@ -34,7 +34,6 @@ class ShowViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.bannerView.bannerWillAppear()
-//        self.bannerView.freshBanner()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -44,7 +43,6 @@ class ShowViewController: UIViewController {
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     //MARK: - PROPERTY
     let bannerStyle: CWBannerStyle
@@ -57,18 +55,26 @@ class ShowViewController: UIViewController {
     
     lazy var bannerView: CWBanner = {
         let layout = CWSwiftFlowLayout.init(style: self.bannerStyle)
+        layout.itemSpace = 10
+        if self.bannerStyle == .preview_big {
+            layout.itemSpace = -20
+        }
         let banner = CWBanner.init(frame: CGRect.init(x: 0, y: 100, width: UIScreen.main.bounds.width, height: 240), flowLayout: layout, delegate: self)
         self.view.addSubview(banner)
         
         banner.backgroundColor = self.view.backgroundColor
         banner.banner.register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellReuseId)
         
-        banner.autoPlay = true
+        banner.autoPlay = false
         banner.endless = true
         banner.timeInterval = 2
         
         return banner
     }()
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.bannerView.scroll(to: 3, animated: false)
+    }
 }
 
 //MARK: - CWBannerDelegate

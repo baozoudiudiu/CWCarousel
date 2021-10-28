@@ -54,8 +54,7 @@ class CWSwiftFlowLayout: UICollectionViewFlowLayout {
             self.initialPreview_zoomStyle()
         case .preview_big:
             self.initialPreview_bigStyle()
-        default:
-            ()
+        default:()
         }
     }
     
@@ -66,24 +65,14 @@ class CWSwiftFlowLayout: UICollectionViewFlowLayout {
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         var arr: [UICollectionViewLayoutAttributes]? = nil;
         switch self.style {
-        case .normal: ()
-            fallthrough
-        case .preview_normal:
-            arr = super.layoutAttributesForElements(in: rect)
-        case .preview_zoom: ()
-            arr = self.caculateScale(rect: rect, block: { (width, space) -> CGFloat in
-                var faceItemSpace = self.itemSpace
-                if(width * (1 - self.minScale) * 0.5 < self.itemSpace) {
-                    faceItemSpace = self.itemSpace - width * (1 - self.minScale) * 0.5;
-                }
-                return (self.minScale - 1.0) / (width + faceItemSpace) * space + 1.0
-            })
+        case .unknown: fallthrough
+        case .normal: fallthrough
+        case .preview_normal: arr = super.layoutAttributesForElements(in: rect)
+        case .preview_zoom: fallthrough
         case .preview_big:
             arr = self.caculateScale(rect: rect, block: { (width, space) -> CGFloat in
-                return -((self.maxScale - 1) / width) * space + self.maxScale;
+                return (self.minScale - 1) / (self.itemSize.width) * space + 1;
             })
-        default:
-            ()
         }
         return arr
     }
@@ -93,7 +82,7 @@ class CWSwiftFlowLayout: UICollectionViewFlowLayout {
     let style: CWBannerStyle
     
     /// 每张图之间的间距, 默认为0
-    var itemSpace: CGFloat = 1
+    var itemSpace: CGFloat = 0
     
     /*
      *   cell的宽度占总宽度的比例
@@ -108,32 +97,12 @@ class CWSwiftFlowLayout: UICollectionViewFlowLayout {
      * 默认: 0.8
      */
     var minScale: CGFloat = 0.8
-    
-    /**
-     * style = preview_big 有效
-     * 中间一张图放大比例
-     * 默认: 1.2
-     1.1.0版本后,无论设置多少,中间一张的cell的比例始终是原始size, 这个比例是相对两边cell的size的相对比例
-     也就是说,该值越大,那么两边的cell就会相对越小.反之越大.
-     */
-    var maxScale: CGFloat = 1.2
 }
 
 
 // MARK: - Logic Helper
 extension CWSwiftFlowLayout {
-    
-    /// 计算样式为preview_big,需要扩展的高度
-    ///
-    /// - Parameter height: 轮播图的高度
-    /// - Returns: 比实际轮播图要高出的高度
-    func addHeight(_ height: CGFloat) -> CGFloat {
-//        if self.style == .preview_big {
-//            return (self.maxScale - 1.0) * height
-//        }
-        return 0
-    }
-    
+        
     /// 计算cell缩放公式
     ///
     /// - Parameters:
@@ -141,21 +110,19 @@ extension CWSwiftFlowLayout {
     ///   - block: 计算方法闭包
     /// - Returns:
     fileprivate func caculateScale(rect: CGRect, block: (CGFloat, CGFloat) -> CGFloat) -> [UICollectionViewLayoutAttributes]? {
-        let arr = super.layoutAttributesForElements(in: rect)?.map({ return $0.copy() }) as! [UICollectionViewLayoutAttributes]?
+        let arr = super.layoutAttributesForElements(in: rect)?.map({$0.copy()}) as! [UICollectionViewLayoutAttributes]?
         let centerX = self.collectionView!.contentOffset.x + self.collectionView!.frame.width * 0.5
         let width = self.collectionView!.frame.width * self.itemWidthScale
         var maxScale: CGFloat = 0
         var attri: UICollectionViewLayoutAttributes? = nil
         arr?.forEach({ (element) in
             let space = CGFloat(abs(element.center.x - centerX))
-            if space >= 0 {
-                var scale: CGFloat = 1.0
-                scale = block(width, space)
-                element.transform = CGAffineTransform.init(scaleX: scale, y: scale)
-                if maxScale < scale {
-                    maxScale = scale
-                    attri = element
-                }
+            var scale: CGFloat = 1.0
+            scale = block(width, space)
+            element.transform = CGAffineTransform.init(scaleX: scale, y: scale)
+            if maxScale < scale {
+                maxScale = scale
+                attri = element
             }
             element.zIndex = 0
         })
@@ -189,17 +156,18 @@ extension CWSwiftFlowLayout {
         let height = self.collectionView!.frame.height
         let width = self.collectionView!.frame.width * self.itemWidthScale
         self.itemSize = CGSize.init(width: width, height: height)
-        self.minimumLineSpacing = self.itemSpace;
+        let padding = width * (1 - self.minScale) * 0.5;
+        self.minimumLineSpacing = self.itemSpace - padding;
     }
     
     /// 设置preiview_big样式
     fileprivate func initialPreview_bigStyle() {
         self.scrollDirection = .horizontal
-        let height = self.collectionView!.frame.height - self.addHeight(self.collectionView!.frame.height)
+        let height = self.collectionView!.frame.height
         let width = self.collectionView!.frame.width * self.itemWidthScale
-        self.itemSize = CGSize.init(width: width, height: height / self.maxScale)
-        self.minimumLineSpacing = self.itemSpace;
-        self.sectionInset = UIEdgeInsets.init(top: self.addHeight(self.collectionView!.frame.height) * 0.5, left: 0, bottom: 0, right: 0)
+        self.itemSize = CGSize.init(width: width, height: height)
+        let padding = width * (1 - self.minScale) * 0.5;
+        self.minimumLineSpacing = self.itemSpace - padding;
     }
 }
 
